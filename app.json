@@ -12,6 +12,12 @@
       "ios",
       "android",
       "web"
+    ],
+    "splash": {
+      "image": "./assets/images/splash.png"
+    },
+    "assetBundlePatterns": [
+      "**/*"
     ]
   }
 }
