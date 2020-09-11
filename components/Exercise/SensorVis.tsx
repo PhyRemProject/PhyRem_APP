@@ -14,7 +14,7 @@ import {
 
 import { Canvas, useFrame, ReactThreeFiber } from 'react-three-fiber'
 
-export default function SensorVis({navigation}) {
+export default function SensorVis({navigation} : any) {
 
     // window.performance.clearMeasures = () => { }
     // window.performance.clearMarks = () => { }
@@ -97,7 +97,7 @@ export default function SensorVis({navigation}) {
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    const Box = (props) => {
+    const Box = (props : any) => {
 
         // This reference will give us direct access to the mesh
         const meshRef = useRef<THREE.Mesh>(null)
@@ -108,9 +108,9 @@ export default function SensorVis({navigation}) {
 
         // Rotate mesh every frame, this is outside of React without overhead
         useFrame(() => {
-            meshRef.current.rotation.x = roll
-            meshRef.current.rotation.y = yaw.current
-            meshRef.current.rotation.z = pitch
+            //(meshRef.current as any).rotation.x = roll
+            (meshRef.current as any).rotation.y = yaw.current
+            //(meshRef.current as any).rotation.z = pitch
         })
 
         return (

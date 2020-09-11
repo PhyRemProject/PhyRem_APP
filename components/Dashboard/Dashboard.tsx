@@ -7,6 +7,10 @@ import {
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import SettingsView from '../Exercise/SettingsView';
 import SensorVis from '../Exercise/SensorVis';
+import {useSelector, useDispatch} from "react-redux"
+import { NavigationStackProp } from 'react-navigation-stack';
+import UserReducer, { USER_LOGIN } from '../User/UserReducer';
+import { AttemptLogin } from '../User/UserActions';
 //import SensorDataView from './components/SensorDataView';
 
 export const styles = StyleSheet.create({
@@ -21,10 +25,12 @@ export const styles = StyleSheet.create({
     },
 });
 
+type Props = {
+    navigation: NavigationStackProp<{ userId: string }>;
+  };
 
 
-
-export default function Dashboard({ navigation }) {
+export default function Dashboard({ navigation }: Props) {
 
     const changeToSettings = () => {
         navigation.navigate("SettingsView", { styles })
@@ -34,6 +40,11 @@ export default function Dashboard({ navigation }) {
         navigation.navigate("SensorVis", { styles })
     }
 
+    
+    const token = useSelector((state: UserReducer) => state.UserReducer.user?.token ) as string
+    const [status, setStatus] = useState("idle")
+    const dispatch = useDispatch()
+    console.log(token)
 
     return (
         <>
@@ -119,7 +130,7 @@ export default function Dashboard({ navigation }) {
                 </View >
             </View >
 
-            <View style={{
+            {/* <View style={{
                 flex: 1,
                 flexWrap: 'wrap',
                 flexDirection: "row",
@@ -135,12 +146,13 @@ export default function Dashboard({ navigation }) {
                     <Text style={{ alignSelf: "center", color: "#6F6CB0" }}>Última notificação</Text>
                 </View>
             </View>
-
+ */}
             <View style={{
                 flex: 1,
                 flexWrap: 'wrap',
                 flexDirection: "row",
                 maxHeight: "18%",
+                paddingTop: 10,
                 paddingLeft: 10,
                 backgroundColor: "white"
             }}>
@@ -160,7 +172,24 @@ export default function Dashboard({ navigation }) {
                 </View>
             </View>
 
-
+            <View style={{
+                flex: 1,
+                flexWrap: 'wrap',
+                flexDirection: "row",
+                maxHeight: "50%",
+                padding: 10,
+                backgroundColor: "white"
+            }}>
+                <View style={{
+                    alignSelf: "flex-start", flexDirection: "row", height: "100%",
+                    flexBasis: "100%", backgroundColor: "rgba(215,214,255,1.0)",
+                    borderRadius: 10, paddingLeft: 10
+                }}>
+                    <Text style={{ alignSelf: "flex-start", textAlign: "center", color: "#6F6CB0" }}>Feed</Text>
+                    <Text style={{ alignSelf: "center",  color: "#6F6CB0" }}>{token}</Text>
+                    <Button title="increase" onPress={() => {dispatch(AttemptLogin("other7@gmail.com", "qwe123", setStatus))}}/>
+                </View>
+            </View>
 
             {/* <View style={styles.container}>
                 <Text>This app test wifi network switching.</Text>

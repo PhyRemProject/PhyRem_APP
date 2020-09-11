@@ -13,9 +13,7 @@ import {
 import WifiManager from "react-native-wifi-reborn";
 import {styles} from "../Dashboard/Dashboard"
 
-export default function SettingsView(props, {navigation}) {
-
-  let goBack = props.goBack;
+export default function SettingsView({navigation} : any) {
 
   const [connectionStatus, setConnectionStatus] = useState("disconnected");
   const [permissionStatus, setPermissionStatus] = useState("notAsked");
@@ -43,7 +41,7 @@ export default function SettingsView(props, {navigation}) {
 
   }
 
-  const askForUserPermissions = async (setPermissionStatus) => {
+  const askForUserPermissions = async (setPermissionStatus : any) => {
 
     try {
       const granted = await PermissionsAndroid.request(
@@ -104,13 +102,6 @@ export default function SettingsView(props, {navigation}) {
 
   return (
     <View style={styles.container}>
-      <Icon
-        raised
-        name="arrow-left"
-        type="font-awesome"
-        size={15}
-        color="black"
-        onPress={goBack} />
 
       <Text>Permission: {permissionStatus}</Text>
       <Text>All Settings</Text>
