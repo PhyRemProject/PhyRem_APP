@@ -5,74 +5,29 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faHome, faUserMd, faCalendarCheck, faChartBar, faUser } from '@fortawesome/free-solid-svg-icons'
 import SettingsView from '../Exercise/SettingsView';
 import SensorVis from '../Exercise/SensorVis';
-import Dashboard from '../Dashboard/Dashboard';
+import Dashboard from '../Dashboard/Home';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import LoggedOffNavigation from './LoggedOffNavigation';
+import LoggedInNavigation from './LoggedInNavigation';
 
 
-const Navigation = (props: any) => {
+interface NavigationProps {
+    loggedIn: boolean
+}
 
-    const { Navigator, Screen } = createStackNavigator();
+const Navigation = (props: NavigationProps) => {
 
-    const Tab = createBottomTabNavigator();
-
-    const customTabBarStyle = {
-        activeTintColor: '#736DFD',
-        inactiveTintColor: '#A7A4FF',
-        style: { backgroundColor: 'white' },
-    }
 
     return (
-
-        <NavigationContainer>
-            <Tab.Navigator
-                initialRouteName="Início"
-                tabBarOptions={customTabBarStyle}
-            >
-                <Tab.Screen name="Médicos" component={SensorVis} options={{
-                    tabBarIcon: ({ color }) => (
-                        <FontAwesomeIcon icon={faUserMd} style={{ color }} size={22} />
-                    )
-                }} />
-                <Tab.Screen name="Consultas" component={SensorVis} options={{
-                    tabBarIcon: ({ color }) => (
-                        <FontAwesomeIcon icon={faCalendarCheck} style={{ color }} size={22} />
-                    )
-                }} />
-                <Tab.Screen name="SensorVis" component={SensorVis}
-                    options={{
-                        tabBarLabel: '',
-                        tabBarIcon: ({ color }) => (
-                            <View
-                                style={{
-                                    position: 'absolute',
-                                    bottom: -10, // space from bottombar
-                                    height: 68,
-                                    width: 68,
-                                    borderRadius: 68 / 2,
-                                    backgroundColor: "#736DFD",
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-
-                                }}
-                            >
-                                <Text style={{ fontSize: 30, color: "#FFF" }}>+</Text>
-                            </View>
-                        )
-                    }}
-                />
-                <Tab.Screen name="Início" component={Dashboard} options={{
-                    tabBarIcon: ({ color }) => (
-                        <FontAwesomeIcon icon={faHome} style={{ color }} size={22} />
-                    )
-                }} />
-                <Tab.Screen name="Definições" component={SettingsView} options={{
-                    tabBarIcon: ({ color }) => (
-                        <FontAwesomeIcon icon={faChartBar} style={{ color }} size={22} />
-                    )
-                }} />
-            </Tab.Navigator>
-        </NavigationContainer>
+        <>
+        {
+            !props.loggedIn ? 
+            <LoggedOffNavigation/>
+            :
+            <LoggedInNavigation/>
+        }
+        </>
     );
 
 }

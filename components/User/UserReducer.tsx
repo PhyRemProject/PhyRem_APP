@@ -4,13 +4,13 @@ import { PURGE } from 'redux-persist'
 //Represents a User structure that will be part of the app state
 export interface UserInterface {
     _id: string | null,
+    email: string | null,
+    password : string | null,
     token: string | null,
-    role: string | null,
-    specialty: [string] | null,
 
+    role: string | null,
     name: string | null,
     gender: string | null,
-    email: string | null,
     phoneNumber: string | null,
     patients: [string] | null,
     imageUrl: string | null,
@@ -69,12 +69,12 @@ export function UserReducer(state = userInitState, action: Action | LoginAction)
                 user: {
                     ...state.user,
                     _id: (action as LoginAction).payload._id,
-                    role: (action as LoginAction).payload.role,
-                    specialty: (action as LoginAction).payload.specialty,
+                    email: (action as LoginAction).payload.email,
+                    password: (action as LoginAction).payload.password,
                     token: (action as LoginAction).payload.token,
+                    role: (action as LoginAction).payload.role,
                     name: (action as LoginAction).payload.name,
                     gender: (action as LoginAction).payload.gender,
-                    email: (action as LoginAction).payload.email,
                     phoneNumber: (action as LoginAction).payload.phoneNumber,
                     patients: (action as LoginAction).payload.patients,
                     imageUrl: "default_user.png"

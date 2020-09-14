@@ -47,7 +47,7 @@ export const AttemptLogin = (email: string, password: string, setStatus: Functio
 
                         dispatch({
                             type: USER_LOGIN_COMPLETE,
-                            payload: { ...decoded.user, token, ...response.data }
+                            payload: { ...decoded.user, token, password, ...response.data }
                         });
 
                         console.log("LOGIN SUCCESSFUL")

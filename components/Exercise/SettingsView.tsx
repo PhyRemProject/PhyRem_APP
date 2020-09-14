@@ -11,7 +11,7 @@ import {
 } from 'react-native-elements';
 
 import WifiManager from "react-native-wifi-reborn";
-import {styles} from "../Dashboard/Dashboard"
+import {styles} from "../Dashboard/Home"
 
 export default function SettingsView({navigation} : any) {
 

@@ -7,44 +7,33 @@ import {
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import SettingsView from '../Exercise/SettingsView';
 import SensorVis from '../Exercise/SensorVis';
-import {useSelector, useDispatch} from "react-redux"
+import { useSelector, useDispatch } from "react-redux"
 import { NavigationStackProp } from 'react-navigation-stack';
 import UserReducer, { USER_LOGIN } from '../User/UserReducer';
 import { AttemptLogin } from '../User/UserActions';
+import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
+import UserSettings from '../User/UserSettings';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 //import SensorDataView from './components/SensorDataView';
 
-export const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontFamily: 'Rawline'
-    },
-});
+const BE_URL = "http://192.168.2.100:5000/api/"
 
 type Props = {
     navigation: NavigationStackProp<{ userId: string }>;
-  };
+};
 
 
-export default function Dashboard({ navigation }: Props) {
+const Dashboard = ({ navigation }: Props) => {
 
-    const changeToSettings = () => {
-        navigation.navigate("SettingsView", { styles })
-    }
-    const changeToVis = () => {
-        //setOpenView(3);
-        navigation.navigate("SensorVis", { styles })
-    }
-
-    
-    const token = useSelector((state: UserReducer) => state.UserReducer.user?.token ) as string
+    const token = useSelector((state: UserReducer) => state.UserReducer.user?.token) as string
+    const patientID = useSelector((state: UserReducer) => state.UserReducer.user?._id) as string
+    const patientName = useSelector((state: UserReducer) => state.UserReducer.user?.name) as string
     const [status, setStatus] = useState("idle")
     const dispatch = useDispatch()
     console.log(token)
+
+
 
     return (
         <>
@@ -74,11 +63,19 @@ export default function Dashboard({ navigation }: Props) {
                 }}>
                     <View style={{ alignSelf: "flex-start", flexBasis: "70%" }}>
                         <Text style={{ fontFamily: "Rawline", color: "white", fontSize: 22, }}>Olá</Text>
-                        <Text style={{ fontFamily: "Rawline-Bold", color: "white", fontSize: 25, lineHeight: 27 }}>Joana!</Text>
+                        <Text style={{ fontFamily: "Rawline-Bold", color: "white", fontSize: 25, lineHeight: 27 }}>{patientName.split(" ")[0]}!</Text>
                     </View>
                     <View style={{ alignSelf: "flex-end", flexBasis: "30%" }}>
-                        <Image source={require("../../assets/images/user.png")} style={{ height: 70, width: 70, borderRadius: 70 / 2, alignSelf: "center" }} />
+                        {/* <Image source={require("../../assets/images/user.png")} style={{ height: 70, width: 70, borderRadius: 70 / 2, alignSelf: "center" }} /> */}
+                        <TouchableOpacity onPress={() => { navigation.navigate("Settings") }}>
+                            <Image
+                                source={{ uri: BE_URL + "patient/profileImage/" + patientID }}
+                                style={{ height: 70, width: 70, borderRadius: 70 / 2, alignSelf: "center" }}
+
+                            />
+                        </TouchableOpacity>
                     </View>
+
                 </View>
                 <View style={{
                     flexDirection: "row",
@@ -161,14 +158,14 @@ export default function Dashboard({ navigation }: Props) {
                     flexBasis: "49%", backgroundColor: "#8582E4",
                     borderRadius: 10, paddingLeft: 10, paddingRight: 5
                 }}>
-                    <Text style={{ alignSelf: "center", color: "#FFF" }}>Próxima Consulta</Text>
+                    <Text style={{ alignSelf: "flex-start", color: "#FFF" }}>Próxima Consulta</Text>
                 </View>
                 <View style={{
                     alignSelf: "flex-start", flexDirection: "row", height: "100%",
                     flexBasis: "47%", backgroundColor: "rgba(215,214,255,1.0)",
                     borderRadius: 10, paddingLeft: 5, paddingRight: 5, marginLeft: 5
                 }}>
-                    <Text style={{ alignSelf: "center", color: "#6F6CB0" }}>Próxima Actividade</Text>
+                    <Text style={{ alignSelf: "flex-start", color: "#6F6CB0" }}>Próxima Actividade</Text>
                 </View>
             </View>
 
@@ -186,8 +183,8 @@ export default function Dashboard({ navigation }: Props) {
                     borderRadius: 10, paddingLeft: 10
                 }}>
                     <Text style={{ alignSelf: "flex-start", textAlign: "center", color: "#6F6CB0" }}>Feed</Text>
-                    <Text style={{ alignSelf: "center",  color: "#6F6CB0" }}>{token}</Text>
-                    <Button title="increase" onPress={() => {dispatch(AttemptLogin("other7@gmail.com", "qwe123", setStatus))}}/>
+                    <Text style={{ alignSelf: "center", color: "#6F6CB0" }}>{token}</Text>
+                    <Button title="increase" onPress={() => { dispatch(AttemptLogin("other7@gmail.com", "qwe123", setStatus)) }} />
                 </View>
             </View>
 
@@ -201,3 +198,4 @@ export default function Dashboard({ navigation }: Props) {
     );
 }
 
+export default Dashboard;

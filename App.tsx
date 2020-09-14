@@ -12,14 +12,15 @@ import {
 } from 'react-native-elements';
 import SettingsView from './components/Exercise/SettingsView';
 import SensorVis from './components/Exercise/SensorVis';
-import Dashboard from './components/Dashboard/Dashboard';
+import Dashboard from './components/Dashboard/Home';
 import { FontDisplay } from 'expo-font';
 //import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 //import SensorDataView from './components/SensorDataView';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStore, Action } from "redux"
-import { Provider } from "react-redux"
+import { Provider, useSelector } from "react-redux"
 import Navigation from './components/Navigation/Navigation';
+import UserReducer from './components/User/UserReducer';
 
 const App = () => {
 
@@ -33,7 +34,15 @@ const App = () => {
 
   //barStyle={{ backgroundColor: '#FFF', borderTopColor: "#DDD", borderStyle: "solid", borderTopWidth: 1 }}
 
-  if (!loaded) {
+  const reduxLoaded = useSelector((state: any) => state._persist.rehydrated)
+  const email = useSelector((state: UserReducer) => state.UserReducer.user?.email) as string
+  const password = useSelector((state: UserReducer) => state.UserReducer.user?.password) as string
+
+  console.log(reduxLoaded)
+  console.log(email)
+
+
+  if (!loaded || !reduxLoaded) {
     return <View>
       <Text>Loading ...</Text>
     </View>;
@@ -41,7 +50,7 @@ const App = () => {
 
     return (
       <>
-        <Navigation />
+        <Navigation loggedIn={email !== undefined} />
       </>
     );
   }
