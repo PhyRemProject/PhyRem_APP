@@ -32,7 +32,7 @@ const LoggedInNavigation = (props: NavigationProps) => {
     const customTabBarStyle = {
         activeTintColor: '#736DFD',
         inactiveTintColor: '#A7A4FF',
-        style: { backgroundColor: 'white' },
+        style: { backgroundColor: 'white', paddingBottom : 10}
     }
 
     useEffect(() => {
@@ -67,7 +67,7 @@ const LoggedInNavigation = (props: NavigationProps) => {
                             <View
                                 style={{
                                     position: 'absolute',
-                                    bottom: -10, // space from bottombar
+                                    bottom: -18, // space from bottombar
                                     height: 68,
                                     width: 68,
                                     borderRadius: 68 / 2,

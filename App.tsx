@@ -25,10 +25,10 @@ import UserReducer from './components/User/UserReducer';
 const App = () => {
 
   const [loaded] = useFonts({
-    "Rawline-Light": require("./assets/fonts/rawline-300.ttf"),
-    "Rawline": require("./assets/fonts/rawline-400.ttf"),
-    "Rawline-Bold": require("./assets/fonts/rawline-600.ttf"),
-    "Rawline-Black": require("./assets/fonts/rawline-900.ttf")
+    "Rawline-Light": require("./assets/fonts/Rawline-Light.ttf"),
+    "Rawline": require("./assets/fonts/Rawline.ttf"),
+    "Rawline-Bold": require("./assets/fonts/Rawline-Bold.ttf"),
+    "Rawline-Black": require("./assets/fonts/Rawline-Black.ttf")
   });
 
 
@@ -42,7 +42,7 @@ const App = () => {
   console.log(email)
 
 
-  if (!loaded || !reduxLoaded) {
+  if (!reduxLoaded) {
     return <View>
       <Text>Loading ...</Text>
     </View>;

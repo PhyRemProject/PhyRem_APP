@@ -25,7 +25,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Allow UniBareProject to use your location</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -40,13 +40,10 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
 	<key>NSAppTransportSecurity</key>
-	<!--See http://ste.vn/2015/06/10/configuring-app-transport-security-ios-9-osx-10-11/ -->
 	<dict>
-    <key>NSAllowsArbitraryLoads</key>
-    <true/>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
 			<key>localhost</key>
@@ -66,8 +63,6 @@
 	<string>Allow UniBareProject to use your location</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Allow UniBareProject to use your location</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Allow UniBareProject to use your location</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow UniBareProject to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
@@ -78,5 +73,30 @@
 	<string>Give UniBareProject periences permission to access your photos</string>
 	<key>NSRemindersUsageDescription</key>
 	<string>Allow UniBareProject to access your reminders</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>rawline-100.ttf</string>
+		<string>rawline-100i.ttf</string>
+		<string>rawline-200.ttf</string>
+		<string>rawline-200i.ttf</string>
+		<string>rawline-300.ttf</string>
+		<string>rawline-300i.ttf</string>
+		<string>rawline-400.ttf</string>
+		<string>rawline-400i.ttf</string>
+		<string>rawline-500.ttf</string>
+		<string>rawline-500i.ttf</string>
+		<string>rawline-600.ttf</string>
+		<string>rawline-600i.ttf</string>
+		<string>rawline-700.ttf</string>
+		<string>rawline-700i.ttf</string>
+		<string>rawline-800.ttf</string>
+		<string>rawline-800i.ttf</string>
+		<string>rawline-900.ttf</string>
+		<string>rawline-900i.ttf</string>
+		<string>Rawline-Black.ttf</string>
+		<string>Rawline-Bold.ttf</string>
+		<string>Rawline-Light.ttf</string>
+		<string>Rawline.ttf</string>
+	</array>
 </dict>
 </plist>
