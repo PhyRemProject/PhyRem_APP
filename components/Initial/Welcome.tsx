@@ -44,19 +44,21 @@ const Welcome = ({ navigation }: Props) => {
             }}>
                 <View style={{
                     flexDirection: "row",
-                    padding: 15,
+                    paddingTop: 35,
+                    paddingLeft: 35,
+                    paddingRight: 15,
                     alignContent: "center",
                     height: "20%",
                     width: "100%",
                 }}>
-                    <Text style={{ fontFamily: "Rawline", color: "#5954DB", fontSize: 22 }}> <Text style={{ fontFamily: "Rawline-Bold" }}>Fisioterapia</Text> {"à distância \ncom a mesma eficácia e carinho"} </Text>
+                    <Text style={{ fontFamily: "Rawline", color: "#5954DB", fontSize: 22 }}><Text style={{ fontFamily: "Rawline-Bold" }}>Fisioterapia</Text> {"à distância \ncom a mesma eficácia e carinho"} </Text>
                 </View>
                 <View style={{
                     flexDirection: "column",
                     alignContent: "center",
                     alignItems: "center",
                     alignSelf: "center",
-                    height: "45%",
+                    height: "40%",
                     width: "100%",
                 }}>
                     <Image

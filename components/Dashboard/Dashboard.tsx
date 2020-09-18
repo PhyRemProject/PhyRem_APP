@@ -15,9 +15,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import UserSettings from '../User/UserSettings';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { SERVICE_API } from '../../constants';
 //import SensorDataView from './components/SensorDataView';
-
-const BE_URL = "http://192.168.2.100:5000/api/"
 
 type Props = {
     navigation: NavigationStackProp<{ userId: string }>;
@@ -69,7 +68,7 @@ const Dashboard = ({ navigation }: Props) => {
                         {/* <Image source={require("../../assets/images/user.png")} style={{ height: 70, width: 70, borderRadius: 70 / 2, alignSelf: "center" }} /> */}
                         <TouchableOpacity onPress={() => { navigation.navigate("Settings") }}>
                             <Image
-                                source={{ uri: BE_URL + "patient/profileImage/" + patientID }}
+                                source={{ uri: SERVICE_API + "patient/profileImage/" + patientID }}
                                 style={{ height: 70, width: 70, borderRadius: 70 / 2, alignSelf: "center" }}
 
                             />
@@ -184,7 +183,6 @@ const Dashboard = ({ navigation }: Props) => {
                 }}>
                     <Text style={{ alignSelf: "flex-start", textAlign: "center", color: "#6F6CB0" }}>Feed</Text>
                     <Text style={{ alignSelf: "center", color: "#6F6CB0" }}>{token}</Text>
-                    <Button title="increase" onPress={() => { dispatch(AttemptLogin("other7@gmail.com", "qwe123", setStatus)) }} />
                 </View>
             </View>
 

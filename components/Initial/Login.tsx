@@ -32,7 +32,7 @@ const Login = ({ navigation }: Props) => {
     const [status, setStatus] = useState()
     const dispatch = useDispatch();
 
-    const [email, setEmail] = useState('other7@gmail.com');
+    const [email, setEmail] = useState('joana.s@mail.com');
     const [password, setPassword] = useState('qwe123');
 
     return (
@@ -57,8 +57,8 @@ const Login = ({ navigation }: Props) => {
                         borderRadius: 25,
                         backgroundColor: "#F2F2FC"
                     }}>
-                        <Text  onPress={() => { navigation.navigate("Welcome") }} >
-                            <FontAwesomeIcon icon={faArrowLeft} style={{ color: "#5954DB" }} size={30}/>
+                        <Text onPress={() => { navigation.navigate("Welcome") }} >
+                            <FontAwesomeIcon icon={faArrowLeft} style={{ color: "#5954DB" }} size={30} />
                         </Text>
                     </View>
                 </View>
@@ -103,8 +103,10 @@ const Login = ({ navigation }: Props) => {
                         start={[0, 1]}
                         end={[1.5, 0]}
                         style={{
+                            flexDirection:"column",
                             padding: 15,
                             height: 60,
+                            alignContent: "center",
                             alignItems: 'center',
                             borderRadius: 5,
                             alignSelf: "stretch",
@@ -112,13 +114,19 @@ const Login = ({ navigation }: Props) => {
                         }}
                     >
                         <Text
-                            style={{ fontFamily: "Rawline", color: "#FFF", fontSize: 17, width: "90%", height: "100%", textAlign: "center" }}
+                            style={{ fontFamily: "Rawline", color: "#FFF", fontSize: 17, width: "90%", height: "100%", textAlign: "center", textAlignVertical: "center" }}
                             onPress={() => { dispatch(AttemptLogin(email, password, setStatus)) }}
                         >
                             Entrar
           </Text>
                     </LinearGradient>
 
+                    {
+                        status && status !== "success" ?
+                            <Text style={{ fontFamily: "Rawline-Bold", marginTop: 5, color: "#FA3333", fontSize: 12, alignSelf: "center" }}> Email ou password errados! </Text>
+                            :
+                            <></>
+                    }
 
                     <Text style={{ fontFamily: "Rawline", marginTop: 20, color: "#000", fontSize: 12, alignSelf: "flex-start" }}> Esqueci-me da password! </Text>
 

@@ -43,17 +43,26 @@ const App = () => {
 
 
   if (!reduxLoaded) {
-    return <View>
-      <Text>Loading ...</Text>
-    </View>;
+    return (
+      <View style={{
+        flex: 1,
+        flexWrap: 'wrap',
+        flexDirection: "column",
+        backgroundColor: "#FFF",
+        alignContent: "center",
+        alignItems: "center"
+      }}>
+        <Text style={{alignSelf: "center", textAlignVertical: "center", height: "100%"}}>A Carregar ...</Text>
+      </View>
+    )
   } else {
 
-    return (
-      <>
-        <Navigation loggedIn={email !== undefined} />
-      </>
-    );
-  }
+  return (
+    <>
+      <Navigation loggedIn={email !== undefined} />
+    </>
+  );
+}
 }
 
 export default App;

@@ -17,20 +17,6 @@ import UserSettings from '../User/UserSettings';
 import Dashboard from './Dashboard';
 //import SensorDataView from './components/SensorDataView';
 
-export const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontFamily: 'Rawline'
-    },
-});
-
-const BE_URL = "http://192.168.2.100:5000/api/"
-
 type Props = {
     navigation: NavigationStackProp<{ userId: string }>;
   };
@@ -48,7 +34,6 @@ const Home = ({navigation} : Props) => {
     );
 
 }
-
 
 export default Home;
 

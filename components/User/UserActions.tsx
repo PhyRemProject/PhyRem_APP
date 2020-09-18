@@ -2,6 +2,7 @@ import React from 'react'
 import axios from 'axios'
 import jwt from 'jwt-decode'
 
+import {SERVICE_API} from "../../constants"
 
 import {
     USER_LOGIN,
@@ -11,8 +12,6 @@ import {
 
 import Store from '../Redux/Store';
 
-const BE_URL = "http://192.168.2.100:5000/api/"
-
 export const AttemptLogin = (email: string, password: string, setStatus: Function) => {
 
     return (dispatch: Function) => {
@@ -21,7 +20,7 @@ export const AttemptLogin = (email: string, password: string, setStatus: Functio
             type: USER_LOGIN
         });
 
-        axios.post(BE_URL + 'login', null, {
+        axios.post(SERVICE_API + 'login', null, {
             params: {
                 "email": email,
                 "password": password,
@@ -33,24 +32,18 @@ export const AttemptLogin = (email: string, password: string, setStatus: Functio
                 let token = response.data.token;
                 let decoded: any = jwt(token);
                 setStatus("success")
-                console.log("login successful")
 
                 const options = {
                     headers: { "Authorization": "Bearer " + token }
                 }
 
-                axios.get(BE_URL + 'patient/profile', options)
+                axios.get(SERVICE_API + 'patient/profile', options)
                     .then(function (response) {
-
-
-                        console.log(response.data)
 
                         dispatch({
                             type: USER_LOGIN_COMPLETE,
                             payload: { ...decoded.user, token, password, ...response.data }
                         });
-
-                        console.log("LOGIN SUCCESSFUL")
 
                     })
                     .catch(function (error) {
