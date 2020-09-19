@@ -1,15 +1,8 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Dimensions, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import {
-    Button
-} from 'react-native-elements';
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import SettingsView from '../Exercise/SettingsView';
-import SensorVis from '../Exercise/SensorVis';
 import { useSelector, useDispatch } from "react-redux"
 import { NavigationStackProp } from 'react-navigation-stack';
-import UserReducer, { USER_LOGIN } from '../User/UserReducer';
 import { AttemptLogin } from '../User/UserActions';
 //import SensorDataView from './components/SensorDataView';
 

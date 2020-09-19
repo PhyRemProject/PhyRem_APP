@@ -3,10 +3,7 @@ import { StyleSheet, Text, View, Dimensions, Image, Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faHome, faUserMd, faCalendarCheck, faChartBar, faUser } from '@fortawesome/free-solid-svg-icons'
-import SettingsView from '../Exercise/SettingsView';
-import SensorVis from '../Exercise/SensorVis';
 import Home from '../Dashboard/Home';
-import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useDispatch, useSelector } from 'react-redux';
 import UserReducer from '../User/UserReducer';
@@ -14,7 +11,6 @@ import { AttemptLogin, AttemptLogout } from '../User/UserActions';
 import Appointments from '../Appointments/Appointments';
 import Physicians from '../Physicians/Physicians';
 import History from '../History/History';
-import NewExercise from "../Exercise/NewExercise"
 import jwt from 'jwt-decode'
 import Exercise from '../Exercise/Exercise';
 

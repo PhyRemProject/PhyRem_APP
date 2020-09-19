@@ -1,17 +1,9 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Dimensions, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import {
-    Button
-} from 'react-native-elements';
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import SettingsView from '../Exercise/SettingsView';
-import SensorVis from '../Exercise/SensorVis';
 import { useSelector, useDispatch } from "react-redux"
 import { NavigationStackProp } from 'react-navigation-stack';
-import UserReducer, { USER_LOGIN } from '../User/UserReducer';
 import { AttemptLogin, AttemptLogout } from '../User/UserActions';
-//import SensorDataView from './components/SensorDataView';
 
 export const styles = StyleSheet.create({
     container: {
@@ -46,7 +38,7 @@ const UserSettings = ({ navigation }: Props) => {
                     flexDirection: "row",
                     padding: 15,
                     alignContent: "center",
-                    height: "10%",
+                    height: "13%",
                     width: "100%",
                 }}>
                     <Text style={{ fontFamily: "Rawline-Bold", color: "#5954DB", fontSize: 22 }}>Definições</Text>

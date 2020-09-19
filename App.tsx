@@ -1,23 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Dimensions, Image } from 'react-native';
-import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font"
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator, } from '@react-navigation/stack';
-import { LinearGradient } from 'expo-linear-gradient';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faHome, faUserMd, faCalendarCheck, faChartBar, faUser } from '@fortawesome/free-solid-svg-icons'
-import {
-  Button
-} from 'react-native-elements';
-import SettingsView from './components/Exercise/SettingsView';
-import SensorVis from './components/Exercise/SensorVis';
-import Dashboard from './components/Dashboard/Home';
-import { FontDisplay } from 'expo-font';
-//import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-//import SensorDataView from './components/SensorDataView';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStore, Action } from "redux"
 import { Provider, useSelector } from "react-redux"
 import Navigation from './components/Navigation/Navigation';
 import UserReducer from './components/User/UserReducer';
