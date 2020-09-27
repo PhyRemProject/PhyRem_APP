@@ -7,8 +7,9 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
 import { View, Text, YellowBox } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import {Camera, CameraControls, DebugAngleGenerator} from "./3DViewResources"
-import Model from "./Model"
+import { Camera, CameraControls, DebugAngleGenerator } from "./3DViewResources"
+import Model, { QuaternionCoorRefs } from "./Model"
+import GradientButton from "../../Global/GradientButton";
 
 YellowBox.ignoreWarnings(['THREE.WebGLRenderer']);
 
@@ -39,11 +40,21 @@ function ExerciseView(props: ExerciseProps) {
     const timer = useRef<any>()
     const [time, setTime] = useState(0)
     const tiker = useRef<number>(0)
+    const [updateTimes, update] = useState(1);
+
 
     //js websocket
     var ws;
 
-    const yaw = useRef(0)
+    const x = useRef(0.0)
+    const y = useRef(0.0)
+    const z = useRef(0.0)
+    const w = useRef(1.0)
+
+    var originx = useRef(0.000);
+    var originy = useRef(0.000);
+    var originz = useRef(0.000);
+    var originw = useRef(1.000);
 
     const DEBUG = false
 
@@ -54,14 +65,15 @@ function ExerciseView(props: ExerciseProps) {
         while (!ws)
 
         if (ws) {
-            console.log("connected to sensor!");
+            console.log("connected to sensor!asda");
 
             ws.onmessage = function (evt) {
-                //console.log(evt)
-                const [newyaw, pitch, roll] = evt.data.split('\t');
-                yaw.current = newyaw
-                //console.log(yaw.current)
-                //setYaw(yaw)
+                const [newW, newX, newY, newZ] = evt.data.split('\t');
+                w.current = parseFloat(newW)
+                x.current = parseFloat(newX)
+                y.current = parseFloat(newY)
+                z.current = parseFloat(newZ)
+                //console.log('x: ' + newX + ' y: ' + newY + ' z: ' + newZ + ' w: ' + newW  )
             }
         }
     }
@@ -73,18 +85,6 @@ function ExerciseView(props: ExerciseProps) {
         if (props.systemStatus === "exercise")
             initConnection();
     }, [props.systemStatus]);
-
-    useEffect(() => {
-        if (DEBUG) {
-            const interval = setInterval(
-                () => {
-                    yaw.current += 0.1;
-                    console.log("updated yaw: ", yaw);
-                }, 100);
-            return () => clearInterval(interval)
-        }
-    }, []);
-
 
     useEffect(() => {
         setTimeout(() => {
@@ -128,14 +128,25 @@ function ExerciseView(props: ExerciseProps) {
             }}>
 
                 <Canvas>
-                    <Camera/>
+                    <Camera />
                     <CameraControls focus={target} />
                     <ambientLight />
                     <pointLight position={[40, 40, 40]} />
-                    {/* <pointLight position={[-40, -40, -40]} /> */}
+                    <pointLight position={[-40, -40, -40]} />
                     <Suspense fallback={null}>
-                         {/* <AngleMarkers forearm={forearm} /> */}
-                        <Model position={[0, 0, 0]} arm={[yaw,0,0]} forearm={forearm} setStatus={props.modelStatus} />
+                        {/* <AngleMarkers forearm={forearm} /> */}
+                        <Model 
+                        position={[0, 0, 0]} 
+                        origin={{
+                            x : originx,
+                            y : originy,
+                            z : originz,
+                            w : originw
+                        } as QuaternionCoorRefs}
+                        arm={{ x, y, z, w } as QuaternionCoorRefs} 
+                        forearm={forearm} 
+                        setStatus={props.modelStatus} 
+                        />
                     </Suspense>
                 </Canvas>
             </View>
@@ -146,17 +157,20 @@ function ExerciseView(props: ExerciseProps) {
                 height: "15%",
                 width: "100%"
             }}>
+                <GradientButton
+                    title={"Reset Pos"}
+                    onPress={() => { 
+                        originw.current = w.current
+                        originx.current = x.current
+                        originy.current = y.current
+                        originz.current = z.current
+                        update(updateTimes + 1)
+                        console.log("ResetPos")
+                     }}
+                    buttonStyle={{ width: "100%", marginTop: 30, opacity: 10 }}
+                    textStyle={{ fontSize: 13 }}
+                />
 
-                {
-                    !play ?
-                        <TouchableOpacity onPress={() => { setPlay(true) }} >
-                            <FontAwesomeIcon icon={faPlay} style={{ color: "#6C63FF", width: "25px" }} />
-                        </TouchableOpacity>
-                        :
-                        <TouchableOpacity onPress={() => { setPlay(false) }} >
-                            <FontAwesomeIcon icon={faPause} style={{ color: "#6C63FF", width: "25px" }} />
-                        </TouchableOpacity>
-                }
             </View>
             <View style={{
                 flexDirection: "row",

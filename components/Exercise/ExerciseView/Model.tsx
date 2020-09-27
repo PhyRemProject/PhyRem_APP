@@ -3,21 +3,82 @@ import React, { useEffect, useRef, useState, Suspense, useMemo, ErrorInfo } from
 import { useLoader, useFrame, Canvas, useThree, extend, ReactThreeFiber, useUpdate } from "react-three-fiber"
 import usePromise from "react-promise-suspense";
 
-import {SERVICE_URL} from "../../../constants"
+import { SERVICE_URL } from "../../../constants"
 
 // Import from jsm for smaller bundles and faster apps
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Asset } from 'expo-asset';
 
-export default function Model({ ...props}) {
+export interface QuaternionCoorRefs {
+    x: React.MutableRefObject<number>,
+    y: React.MutableRefObject<number>,
+    z: React.MutableRefObject<number>,
+    w: React.MutableRefObject<number>
+}
+
+const Model = ({ ...props }) => {
+
+    let zeroQ = new THREE.Quaternion(0, 0, 0, 1)
+
+    //start orientation é o zeroQ a referencia de como queres que seja o referencial
+    //endOrientation é a leitura actual do gyro que é para ser tornada origem
+    //gyroTrackingDelta fica com a diferença entre os dois, permitindo assim fazer a diferença com futuras leituras,
+    //  ou seja, futuros endOrientation
+    //d: -0.57	x: 0.01	y: -0.01	z: -0.82
+
+    var prevQuaterns: [THREE.Quaternion] = [zeroQ]
+
+    var gyroTrackingDelta = new THREE.Quaternion(props.origin.z.current, props.origin.y.current, props.origin.x.current, -props.origin.w.current)  //startOriuentation
+        .clone()
+        .inverse();
+    gyroTrackingDelta.multiply(zeroQ);
+
+    const rotationSmoothing = (quat: QuaternionCoorRefs) => {
+        if (prevQuaterns.length < 5) {
+            prevQuaterns.push(new THREE.Quaternion(quat.z.current, quat.y.current, quat.x.current, -quat.w.current))
+            return (new THREE.Quaternion(quat.z.current, quat.y.current, quat.x.current, -quat.w.current))
+        }
+        else {
+            prevQuaterns.splice(0, 1)
+            prevQuaterns.push(new THREE.Quaternion(quat.z.current, quat.y.current, quat.x.current, -quat.w.current))
+            //console.log(prevQuaterns)
+            let accx: number = 0, accy: number = 0, accz: number = 0, accw: number = 0;
+            for (let i = 0; i < prevQuaterns.length; i++) {
+                accx += prevQuaterns[i].x
+                accy += prevQuaterns[i].y
+                accz += prevQuaterns[i].z
+                accw += prevQuaterns[i].w
+            }
+
+            return (new THREE.Quaternion((accx / prevQuaterns.length), accy / prevQuaterns.length, accz / prevQuaterns.length, accw / prevQuaterns.length))
+        }
+    }
+
+    const rotateBone = (bone: THREE.Bone, quatVals: QuaternionCoorRefs) => {
+        let averagedQuatern: THREE.Quaternion = rotationSmoothing(quatVals);
+
+        //Quaternion resulting from applying the sensor's readings
+        // Since the sensor's default referencial is different from the viewport's, the axis order has to be changed
+        // and so, while the order of the viewport is y| x- z. the sensor is z| y- x.
+        // This is fairly redundant since after this axis change it is multiplied the gyroTrackingDelta to zero out the
+        //  initial position of the sensor, matching the app and the sensor.
+        // const tempQuatern = new THREE.Quaternion(y.current, z.current, x.current, -w.current)
+        //     .multiply(gyroTrackingDelta);
+        const tempQuatern = averagedQuatern
+            .multiply(gyroTrackingDelta);
+
+        // Following the axis swap, a change of Z's direction of rotation is necessary to match the viewport axis, to do this
+        //  all other components are inverted
+        const tempQuatern2 = new THREE.Quaternion(-tempQuatern.x, -tempQuatern.y, -tempQuatern.z, -tempQuatern.w);
+
+        //Apply the resulting quaternion to the model
+        bone.setRotationFromQuaternion(tempQuatern2);
+    }
+
     const group = useRef()
     const material = useRef()
 
-    // const url = usePromise(getModelUrl, []);
     const loaded = useLoader(GLTFLoader, SERVICE_URL + "/objects/BodyRigged.glb");
-
-    //const loaded = useLoader(GLTFLoader, "../../assets/objects/BodyRigged.glb")
-    //console.log(loaded)
 
     const [object, bones, skeleton] = useMemo(() => {
         if (!(loaded as any).bones) (loaded as any).bones = loaded.scene.children[0].children[0];
@@ -25,7 +86,6 @@ export default function Model({ ...props}) {
             (loaded as any).skeleton = (loaded.scene.children[0].children[1] as any).skeleton;
         if (!(loaded as any).object)
             (loaded as any).object = (loaded.scene.children[0] as any);
-        //console.log("LOADER FINALIZED")
         props.setStatus("ready")
         return [(loaded as any).object, (loaded as any).bones, (loaded as any).skeleton];
     }, [loaded]);
@@ -34,38 +94,21 @@ export default function Model({ ...props}) {
 
     useFrame((state, delta) => {
 
-        moveJoint([props.arm[0].current, 0,0],nodes.Arm0, 360)
-        // nodes.Arm0.rotation.xD = props.arm[0].current
-        // nodes.Arm0.rotation.yD = props.arm[1]
-        // nodes.Arm0.rotation.zD = props.arm[2]
-        //moveJoint(props.arm, nodes.Arm0)
-        //moveJoint(props.forearm, nodes.Arm1)
+        rotateBone(nodes.Arm0, props.arm)
+        //rotateBone(nodes.Arm1, props.arm)
+        //(nodes.Arm0 as THREE.Bone).setRotationFromQuaternion(new THREE.Quaternion(0.2,0.0,0.0,1))
     })
 
     return (
         <group ref={group} {...props} dispose={null}>
-            {/* <group scale={[0.1, 0.1, 0.1]}> */}
             <primitive object={object} />
             <skinnedMesh geometry={nodes["Body_low"].geometry} skeleton={skeleton}>
                 {/* <skeletonHelper args={object} /> */}
                 <meshPhongMaterial ref={material} attach="material" color="#b3720a" skinning />
-                {/* <meshPhongMaterial attach="material" map={texture} map-flipY={false} skinning /> */}
             </skinnedMesh>
-            {/* </group> */}
         </group>
     )
 }
 
-function moveJoint(amount: number[], joint: any, degreeLimit = 40) {
-    let degrees = { x: amount[0], y: amount[1], z: amount[2] }
-    joint.rotation.xD = lerp(joint.rotation.xD || 0, degrees.y, 1)
-    joint.rotation.yD = lerp(joint.rotation.yD || 0, degrees.x, 1)
-    joint.rotation.zD = lerp(joint.rotation.zD || 0, degrees.z, 1)
-    joint.rotation.x = THREE.MathUtils.degToRad(joint.rotation.xD)
-    joint.rotation.y = THREE.MathUtils.degToRad(joint.rotation.yD)
-    joint.rotation.z = THREE.MathUtils.degToRad(joint.rotation.zD)
-}
 
-function lerp(v0: any, v1: any, t: any) {
-    return v0 * (1 - t) + v1 * t
-}
+export default Model;

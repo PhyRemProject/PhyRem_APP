@@ -29,13 +29,13 @@ export const CameraControls = (props: any) => {
         let objectpos = object?.getWorldPosition(position); //Getting the world position of the object. 
 
         if (!object) {
-            camera.position.set(0, 0, 100);
+            camera.position.set(0, 0, -100);
             (controls.current as any).target.set(0, 0, 0);
         }
         else {
             //camera.position.set(object?.position.x, object?.position.y, 100);
             if (prevFocus.current !== props.focus) {
-                camera.position.set(position.x, position.y, 150);
+                camera.position.set(position.x, position.y, -150);
                 (controls.current as any).target.set(position.x, position.y, position.z);
                 prevFocus.current = props.focus;
             } else {
