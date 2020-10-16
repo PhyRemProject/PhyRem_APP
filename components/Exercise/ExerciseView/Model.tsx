@@ -28,13 +28,19 @@ const Model = ({ ...props }) => {
 
     var prevQuaterns: [THREE.Quaternion] = [zeroQ]
 
-    var gyroTrackingDelta = new THREE.Quaternion(props.origin.z.current, props.origin.y.current, props.origin.x.current, -props.origin.w.current)  //startOriuentation
-        .clone()
-        .inverse();
-    gyroTrackingDelta.multiply(zeroQ);
+    // var gyroDeltaArm = new THREE.Quaternion(props.armOrigin.z.current, props.armOrigin.y.current, props.armOrigin.x.current, -props.armOrigin.w.current)  //startOriuentation
+    //     .clone()
+    //     .inverse();
+    //     gyroDeltaArm.multiply(zeroQ);
+
+    // var gyroDeltaForearm = new THREE.Quaternion(props.forearmOrigin.z.current, props.forearmOrigin.y.current, props.forearmOrigin.x.current, -props.forearmOrigin.w.current)  //startOriuentation
+    //     .clone()
+    //     .inverse();
+    //     gyroDeltaForearm.multiply(zeroQ);
+
 
     const rotationSmoothing = (quat: QuaternionCoorRefs) => {
-        if (prevQuaterns.length < 5) {
+        if (prevQuaterns.length < 10) {
             prevQuaterns.push(new THREE.Quaternion(quat.z.current, quat.y.current, quat.x.current, -quat.w.current))
             return (new THREE.Quaternion(quat.z.current, quat.y.current, quat.x.current, -quat.w.current))
         }
@@ -54,8 +60,28 @@ const Model = ({ ...props }) => {
         }
     }
 
-    const rotateBone = (bone: THREE.Bone, quatVals: QuaternionCoorRefs) => {
-        let averagedQuatern: THREE.Quaternion = rotationSmoothing(quatVals);
+    const calculateAngleBetween = (d1 : THREE.Vector3, d2 : THREE.Vector3) => {
+
+        //Caculate dot product
+        let uv = (d1.x * d2.x) + (d1.y * d2.y) + (d1.z * d2.z)
+
+        //Calculate Magnitudes
+        let u = Math.sqrt((Math.pow(d1.x, 2) + Math.pow(d1.y, 2) + Math.pow(d1.z, 2)))
+        let v = Math.sqrt((Math.pow(d2.x, 2) + Math.pow(d2.y, 2) + Math.pow(d2.z, 2)))
+
+        //arccos the ratio between the two
+        let result = Math.acos(( uv / (u*v) ));
+        return  THREE.MathUtils.radToDeg(result);
+    }
+
+    const rotateBone = (bone: THREE.Bone, quatVals: QuaternionCoorRefs, rotationOrigin: QuaternionCoorRefs) => {
+        //let averagedQuatern: THREE.Quaternion = rotationSmoothing(quatVals);
+        let averagedQuatern = new THREE.Quaternion(quatVals.z.current, quatVals.y.current, quatVals.x.current, -quatVals.w.current)
+
+        var gyroDelta = new THREE.Quaternion(rotationOrigin.z.current, rotationOrigin.y.current, rotationOrigin.x.current, -rotationOrigin.w.current)  //startOriuentation
+        .clone()
+        .inverse();
+        gyroDelta.multiply(zeroQ);
 
         //Quaternion resulting from applying the sensor's readings
         // Since the sensor's default referencial is different from the viewport's, the axis order has to be changed
@@ -65,7 +91,7 @@ const Model = ({ ...props }) => {
         // const tempQuatern = new THREE.Quaternion(y.current, z.current, x.current, -w.current)
         //     .multiply(gyroTrackingDelta);
         const tempQuatern = averagedQuatern
-            .multiply(gyroTrackingDelta);
+            .multiply(gyroDelta);
 
         // Following the axis swap, a change of Z's direction of rotation is necessary to match the viewport axis, to do this
         //  all other components are inverted
@@ -91,10 +117,28 @@ const Model = ({ ...props }) => {
     }, [loaded]);
 
     const nodes = (loaded as any).nodes
+    let tempQuatArm = new THREE.Quaternion;
+    let tempQuatForearm = new THREE.Quaternion;
+    let tempArmDir = new THREE.Vector3;
+    let tempForearmDir = new THREE.Vector3;
+    let angle = "";
 
     useFrame((state, delta) => {
 
-        rotateBone(nodes.Arm0, props.arm)
+        rotateBone(nodes.Arm0, props.arm, props.armOrigin);
+        rotateBone(nodes.Arm1, props.forearm, props.forearmOrigin);
+        
+        (nodes.Arm0 as THREE.Bone).getWorldQuaternion(tempQuatArm);
+        (nodes.Arm1 as THREE.Bone).getWorldQuaternion(tempQuatForearm);
+        (nodes.Arm0 as THREE.Bone).getWorldDirection(tempArmDir);
+        (nodes.Arm1 as THREE.Bone).getWorldDirection(tempForearmDir);
+
+        //props.currenAngleRef.current = "x: " + tempQuatArm.x.toPrecision(2) + "\ty: " + tempQuatArm.y.toPrecision(2) + "\tz: " + tempQuatArm.z.toPrecision(2) + "\tw: " + tempQuatArm.w.toPrecision(2);
+        //props.currenAngleRef.current = "x: " + tempQuatForearm.x.toPrecision(2) + "\ty: " + tempQuatForearm.y.toPrecision(2) + "\tz: " + tempQuatForearm.z.toPrecision(2) + "\tw: " + tempQuatForearm.w.toPrecision(2);
+
+        angle = calculateAngleBetween(tempArmDir, tempForearmDir)
+        //props.currenAngleRef.current = "x: " + tempArmDir.x.toPrecision(2) + "\ty: " + tempArmDir.y.toPrecision(2) + "\tz: " + tempArmDir.z.toPrecision(2);
+        props.currenAngleRef.current = "Angle: " + angle;
         //rotateBone(nodes.Arm1, props.arm)
         //(nodes.Arm0 as THREE.Bone).setRotationFromQuaternion(new THREE.Quaternion(0.2,0.0,0.0,1))
     })

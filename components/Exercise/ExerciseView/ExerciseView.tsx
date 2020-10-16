@@ -10,6 +10,8 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { Camera, CameraControls, DebugAngleGenerator } from "./3DViewResources"
 import Model, { QuaternionCoorRefs } from "./Model"
 import GradientButton from "../../Global/GradientButton";
+import SensorCalibration from "./SensorCalibration";
+import AngleProgress from "./AngleProgress";
 
 YellowBox.ignoreWarnings(['THREE.WebGLRenderer']);
 
@@ -32,29 +34,32 @@ interface ExerciseProps {
 function ExerciseView(props: ExerciseProps) {
 
     //const arm = useRef(0)
-    const [loading, setLoading] = useState(true)
-    const [arm, setArm] = useState(0)
-    const [forearm, setForearm] = useState(0)
     const [target, setTarget] = useState("Arm1")
-    const [play, setPlay] = useState(false)
-    const timer = useRef<any>()
-    const [time, setTime] = useState(0)
-    const tiker = useRef<number>(0)
-    const [updateTimes, update] = useState(1);
-
+    
+    const angle = useRef<string>("Angle")
 
     //js websocket
     var ws;
 
-    const x = useRef(0.0)
-    const y = useRef(0.0)
-    const z = useRef(0.0)
-    const w = useRef(1.0)
+    const armX = useRef(0.0)
+    const armY = useRef(0.0)
+    const armZ = useRef(0.0)
+    const armW = useRef(1.0)
 
-    var originx = useRef(0.000);
-    var originy = useRef(0.000);
-    var originz = useRef(0.000);
-    var originw = useRef(1.000);
+    const forearmX = useRef(0.0)
+    const forearmY = useRef(0.0)
+    const forearmZ = useRef(0.0)
+    const forearmW = useRef(1.0)
+
+    var armOX = useRef(0.000);
+    var armOY = useRef(0.000);
+    var armOZ = useRef(0.000);
+    var armOW = useRef(1.000);
+
+    var forearmOX = useRef(0.000);
+    var forearmOY = useRef(0.000);
+    var forearmOZ = useRef(0.000);
+    var forearmOW = useRef(1.000);
 
     const DEBUG = false
 
@@ -65,123 +70,162 @@ function ExerciseView(props: ExerciseProps) {
         while (!ws)
 
         if (ws) {
-            console.log("connected to sensor!asda");
+            console.log("connected to sensor!");
 
             ws.onmessage = function (evt) {
-                const [newW, newX, newY, newZ] = evt.data.split('\t');
-                w.current = parseFloat(newW)
-                x.current = parseFloat(newX)
-                y.current = parseFloat(newY)
-                z.current = parseFloat(newZ)
-                //console.log('x: ' + newX + ' y: ' + newY + ' z: ' + newZ + ' w: ' + newW  )
+                let readings = evt.data.split('\r');
+                const [deviceNumb, newW, newX, newY, newZ, deviceNumb2, newW2, newX2, newY2, newZ2] = evt.data.split('\t');
+
+                //Remove the last \r
+                readings.pop();
+                const numOfDevices = readings.length;
+
+                //console.log(JSON.stringify(readings))
+                let sensor1 = readings[0];
+                sensor1 = sensor1.split('\t');
+
+                let sensor2 = null;
+                if (numOfDevices > 1) {
+                    sensor2 = readings[1];
+                    sensor2 = sensor2.split('\t');
+                    sensor2.splice(0, 1);
+                }
+
+                //console.log(sensor1)
+                //console.log(sensor2)
+
+                armX.current = parseFloat(sensor1[1])
+                armY.current = parseFloat(sensor1[2])
+                armZ.current = parseFloat(sensor1[3])
+                armW.current = parseFloat(sensor1[4])
+                forearmX.current = parseFloat(sensor2[1])
+                forearmY.current = parseFloat(sensor2[2])
+                forearmZ.current = parseFloat(sensor2[3])
+                forearmW.current = parseFloat(sensor2[4])
             }
         }
     }
 
-    const angle = useRef(0);
-
+    const updateRefPosition = () => {
+        armOX.current = armX.current
+        armOY.current = armY.current
+        armOZ.current = armZ.current
+        armOW.current = armW.current
+        forearmOX.current = forearmX.current
+        forearmOY.current = forearmY.current
+        forearmOZ.current = forearmZ.current
+        forearmOW.current = forearmW.current
+        //update(updateTimes + 1)
+        console.log("ResetPos")
+        console.log([
+            armOX.current,
+            armOY.current,
+            armOZ.current,
+            armOW.current,
+            forearmOX.current,
+            forearmOY.current,
+            forearmOZ.current,
+            forearmOW.current
+        ])
+    }
 
     useEffect(() => {
-        if (props.systemStatus === "exercise")
             initConnection();
     }, [props.systemStatus]);
 
+
     useEffect(() => {
-        setTimeout(() => {
-            setLoading(false)
-        }, 700)
+        const id = setInterval(() => {
+            angle.current = angle.current + 1;
+        }, 500)
     }, [])
 
-
-    useEffect(() => {
-        if (play && tiker.current <= (30 * 60 - 1)) {
-            const id = setInterval(() => {
-                tiker.current += 1
-                setTime(tiker.current)
-                setForearm(DebugAngleGenerator(tiker.current))
-                //DebugAngleGenerator(tiker.current)
-                //console.log(time)
-            }, 17);
-
-            timer.current = id;
-        }
-        else {
-            clearInterval(timer.current as any);
-        }
-
-    }, [play])
-
     return (
-        <View style={{
-            flex: 1,
-            flexWrap: 'wrap',
-            flexDirection: "column",
-            backgroundColor: "#FFF",
-            zIndex: -1
-        }}>
+        <>
+            <SensorCalibration updateRefPosition={updateRefPosition}/>
             <View style={{
-                flexDirection: "row",
-                padding: 15,
-                alignContent: "center",
-                height: "80%",
+                flex: 1,
+                flexWrap: 'wrap',
+                flexDirection: "column",
+                backgroundColor: "#FFF",
+                zIndex: -1,
                 width: "100%",
+                height: "100%"
             }}>
+                <View style={{
+                    flexDirection: "row",
+                    padding: 15,
+                    alignContent: "center",
+                    height: "70%",
+                    width: "100%",
+                }}>
 
-                <Canvas>
-                    <Camera />
-                    <CameraControls focus={target} />
-                    <ambientLight />
-                    <pointLight position={[40, 40, 40]} />
-                    <pointLight position={[-40, -40, -40]} />
-                    <Suspense fallback={null}>
-                        {/* <AngleMarkers forearm={forearm} /> */}
-                        <Model 
-                        position={[0, 0, 0]} 
-                        origin={{
-                            x : originx,
-                            y : originy,
-                            z : originz,
-                            w : originw
-                        } as QuaternionCoorRefs}
-                        arm={{ x, y, z, w } as QuaternionCoorRefs} 
-                        forearm={forearm} 
-                        setStatus={props.modelStatus} 
-                        />
-                    </Suspense>
-                </Canvas>
-            </View>
-            <View style={{
-                flexDirection: "row",
-                padding: 15,
-                alignContent: "center",
-                height: "15%",
-                width: "100%"
-            }}>
-                <GradientButton
-                    title={"Reset Pos"}
-                    onPress={() => { 
-                        originw.current = w.current
-                        originx.current = x.current
-                        originy.current = y.current
-                        originz.current = z.current
-                        update(updateTimes + 1)
-                        console.log("ResetPos")
-                     }}
-                    buttonStyle={{ width: "100%", marginTop: 30, opacity: 10 }}
-                    textStyle={{ fontSize: 13 }}
-                />
+                    <Canvas>
+                        <Camera position={[-150, 30, 0]} />
+                        <CameraControls focus={target} />
+                        <ambientLight />
+                        <pointLight position={[40, 40, 40]} />
+                        <pointLight position={[-40, -40, -40]} />
+                        <Suspense fallback={null}>
+                            {/* <AngleMarkers forearm={forearm} /> */}
+                            <Model
+                                position={[0, 0, 0]}
+                                armOrigin={{
+                                    x: armOX,
+                                    y: armOY,
+                                    z: armOZ,
+                                    w: armOW
+                                } as QuaternionCoorRefs}
+                                arm={{
+                                    x: armX,
+                                    y: armY,
+                                    z: armZ,
+                                    w: armW
+                                } as QuaternionCoorRefs}
+                                forearmOrigin={{
+                                    x: forearmOX,
+                                    y: forearmOY,
+                                    z: forearmOZ,
+                                    w: forearmOW
+                                } as QuaternionCoorRefs}
+                                forearm={{
+                                    x: forearmX,
+                                    y: forearmY,
+                                    z: forearmZ,
+                                    w: forearmW
+                                } as QuaternionCoorRefs}
+                                setStatus={props.modelStatus}
+                                currenAngleRef={angle}
+                            />
+                        </Suspense>
+                    </Canvas>
+                </View>
+                <View style={{
+                    flexDirection: "row",
+                    padding: 15,
+                    alignContent: "center",
+                    height: "15%",
+                    width: "100%"
+                }}>
+                    <GradientButton
+                        title={"Reset Pos"}
+                        onPress={updateRefPosition}
+                        buttonStyle={{ width: "100%", marginTop: 30, opacity: 10 }}
+                        textStyle={{ fontSize: 13 }}
+                    />
 
+                </View>
+                <View style={{
+                    flexDirection: "row",
+                    padding: 15,
+                    alignContent: "center",
+                    height: "10%",
+                    width: "100%"
+                }}>
+                    <AngleProgress angleRef={angle}/>
+                </View>
             </View>
-            <View style={{
-                flexDirection: "row",
-                padding: 15,
-                alignContent: "center",
-                height: "10%",
-                width: "100%"
-            }}>
-                <Text></Text>
-            </View>
-        </View>
+        </>
     );
 }
 

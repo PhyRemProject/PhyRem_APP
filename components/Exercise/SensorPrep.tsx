@@ -10,6 +10,7 @@ import Spinner from 'react-native-spinkit';
 import WifiManager from "react-native-wifi-reborn";
 import ExerciseView from './ExerciseView/ExerciseView';
 import ErrorBoundary from '../Global/ErrorBoundary';
+import SensorCalibration from './ExerciseView/SensorCalibration';
 
 type Props = {
     navigation: NavigationStackProp<{ userId: string }>;
@@ -85,16 +86,13 @@ const SensorPrep = ({ navigation }: Props) => {
         }
     }
 
+    console.log(view)
     return (
         <>
-            <ErrorBoundary>
-                <ExerciseView modelStatus={setModelStatus} systemStatus={view} />
-            </ErrorBoundary>
-
             <View style={{
                 position: "absolute",
                 backgroundColor: "#FFF",
-                zIndex: view === "exercise" ? -99 : 99,
+                zIndex: view === "sensorPrep" ? 99 : -99,
                 width: "100%",
                 height: "100%",
             }}>
@@ -272,7 +270,7 @@ const SensorPrep = ({ navigation }: Props) => {
                             connectionStatus === "connected" ?
                                 <GradientButton
                                     title={"Iniciar Exercício"}
-                                    onPress={() => { setView("exercise") }}
+                                    onPress={() => { setView("calibration") }}
                                     buttonStyle={{ width: "100%", marginTop: 30, opacity: 10 }}
                                     textStyle={{ fontSize: 13 }}
                                 />
@@ -283,7 +281,7 @@ const SensorPrep = ({ navigation }: Props) => {
 
                         <GradientButton
                             title={"Continuar (DEBUG)"}
-                            onPress={() => { setView("exercise") }}
+                            onPress={() => { setView("calibration") }}
                             buttonStyle={{ width: "100%", marginTop: 30, opacity: 10 }}
                             textStyle={{ fontSize: 13 }}
                         />
@@ -291,6 +289,10 @@ const SensorPrep = ({ navigation }: Props) => {
                     </View>
                 </View>
             </View>
+
+            <ErrorBoundary>
+                <ExerciseView modelStatus={setModelStatus} systemStatus={view} />
+            </ErrorBoundary>
         </>
     );
 }
