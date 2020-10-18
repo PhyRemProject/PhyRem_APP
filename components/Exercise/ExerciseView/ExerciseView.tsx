@@ -219,7 +219,7 @@ function ExerciseView(props: ExerciseProps) {
                     flexDirection: "row",
                     padding: 15,
                     alignContent: "center",
-                    height: "10%",
+                    height: "15%",
                     width: "100%"
                 }}>
                     <AngleProgress angleRef={angle}/>

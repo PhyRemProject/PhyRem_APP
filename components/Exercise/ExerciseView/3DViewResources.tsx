@@ -29,13 +29,19 @@ export const CameraControls = (props: any) => {
         let objectpos = object?.getWorldPosition(position); //Getting the world position of the object. 
 
         if (!object) {
-            camera.position.set(0, 0, -100);
+            //side
+            camera.position.set(-130, -15, 5);
+            //back
+            //camera.position.set(-40, 0, -140);
             (controls.current as any).target.set(0, 0, 0);
         }
         else {
             //camera.position.set(object?.position.x, object?.position.y, 100);
             if (prevFocus.current !== props.focus) {
-                camera.position.set(position.x, position.y, -150);
+                //side
+                camera.position.set(-130, -15, 5);
+                //back
+                //camera.position.set(-40, 0, -140);
                 (controls.current as any).target.set(position.x, position.y, position.z);
                 prevFocus.current = props.focus;
             } else {
@@ -47,12 +53,6 @@ export const CameraControls = (props: any) => {
     return <orbitControls ref={controls} args={[camera, domElement]} target={props.target} />;
 };
 
-
-
-
-
-
-
 export function Camera(props: any) {
     const ref = useRef()
     const { setDefaultCamera } = useThree()
@@ -60,24 +60,23 @@ export function Camera(props: any) {
     useEffect(() => void setDefaultCamera((ref as any).current), [])
     // Update it every frame
     useFrame(() => (ref as any).current.updateMatrixWorld())
-    return <perspectiveCamera ref={ref} {...props} />
+    return <perspectiveCamera ref={ref} {...props} position={[-130, -15, 5]} />
 }
 
-
 export function DebugAngleGenerator(time: number) {
-    
+
     const timeInterval = [0, 2 * 60]
     const angleInterval = [0, 80]
-    
+
     var angle;
     var timeposition = time % (4 * 60);
-    
+
     //if (timeposition <= (2 * 60))
     angle = angleInterval[0] + (((angleInterval[1] - angleInterval[0]) / (timeInterval[1] - timeInterval[0])) * (timeposition - timeInterval[0])) % angleInterval[1]
     //else if (timeposition > (2 * 60))
     //angle =  (angleInterval[0] + (((angleInterval[1] - angleInterval[0]) / (timeInterval[1] - timeInterval[0])) * (timeposition - timeInterval[0])))
     //else angle = 0
-    
+
     //console.log("TIME: ", time)
     //console.log("TIMEPOSITION: ", timeposition)
     //console.log("ANGLE: ", angle)

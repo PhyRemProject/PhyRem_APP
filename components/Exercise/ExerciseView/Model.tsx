@@ -8,6 +8,7 @@ import { SERVICE_URL } from "../../../constants"
 // Import from jsm for smaller bundles and faster apps
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Asset } from 'expo-asset';
+import { Euler } from "three";
 
 export interface QuaternionCoorRefs {
     x: React.MutableRefObject<number>,
@@ -18,7 +19,10 @@ export interface QuaternionCoorRefs {
 
 const Model = ({ ...props }) => {
 
-    let zeroQ = new THREE.Quaternion(0, 0, 0, 1)
+    let zeroQ = new THREE.Quaternion(0.0, 0.0, 0.0, 1)
+    let zeroArmQ = new THREE.Quaternion(0.0, 0.0, 0.0, 0.1)
+    zeroArmQ.setFromEuler(new Euler(THREE.MathUtils.degToRad(-60),THREE.MathUtils.degToRad(25),THREE.MathUtils.degToRad(90)))
+    let zeroForearmQ = new THREE.Quaternion(0.0, 0.0, 0.0, 1)
 
     //start orientation é o zeroQ a referencia de como queres que seja o referencial
     //endOrientation é a leitura actual do gyro que é para ser tornada origem
@@ -60,7 +64,7 @@ const Model = ({ ...props }) => {
         }
     }
 
-    const calculateAngleBetween = (d1 : THREE.Vector3, d2 : THREE.Vector3) => {
+    const calculateAngleBetween = (d1: THREE.Vector3, d2: THREE.Vector3) => {
 
         //Caculate dot product
         let uv = (d1.x * d2.x) + (d1.y * d2.y) + (d1.z * d2.z)
@@ -70,8 +74,8 @@ const Model = ({ ...props }) => {
         let v = Math.sqrt((Math.pow(d2.x, 2) + Math.pow(d2.y, 2) + Math.pow(d2.z, 2)))
 
         //arccos the ratio between the two
-        let result = Math.acos(( uv / (u*v) ));
-        return  THREE.MathUtils.radToDeg(result);
+        let result = Math.acos((uv / (u * v)));
+        return THREE.MathUtils.radToDeg(result);
     }
 
     const rotateBone = (bone: THREE.Bone, quatVals: QuaternionCoorRefs, rotationOrigin: QuaternionCoorRefs) => {
@@ -79,10 +83,12 @@ const Model = ({ ...props }) => {
         let averagedQuatern = new THREE.Quaternion(quatVals.z.current, quatVals.y.current, quatVals.x.current, -quatVals.w.current)
 
         var gyroDelta = new THREE.Quaternion(rotationOrigin.z.current, rotationOrigin.y.current, rotationOrigin.x.current, -rotationOrigin.w.current)  //startOriuentation
-        .clone()
-        .inverse();
-        gyroDelta.multiply(zeroQ);
-
+            .clone()
+            .inverse();
+        if (bone.name === "Arm0")
+            gyroDelta.multiply(zeroArmQ);
+        else if (bone.name === "Arm1")
+            gyroDelta.multiply(zeroForearmQ);
         //Quaternion resulting from applying the sensor's readings
         // Since the sensor's default referencial is different from the viewport's, the axis order has to be changed
         // and so, while the order of the viewport is y| x- z. the sensor is z| y- x.
@@ -117,8 +123,6 @@ const Model = ({ ...props }) => {
     }, [loaded]);
 
     const nodes = (loaded as any).nodes
-    let tempQuatArm = new THREE.Quaternion;
-    let tempQuatForearm = new THREE.Quaternion;
     let tempArmDir = new THREE.Vector3;
     let tempForearmDir = new THREE.Vector3;
     let angle = "";
@@ -127,16 +131,14 @@ const Model = ({ ...props }) => {
 
         rotateBone(nodes.Arm0, props.arm, props.armOrigin);
         rotateBone(nodes.Arm1, props.forearm, props.forearmOrigin);
-        
-        (nodes.Arm0 as THREE.Bone).getWorldQuaternion(tempQuatArm);
-        (nodes.Arm1 as THREE.Bone).getWorldQuaternion(tempQuatForearm);
+
         (nodes.Arm0 as THREE.Bone).getWorldDirection(tempArmDir);
         (nodes.Arm1 as THREE.Bone).getWorldDirection(tempForearmDir);
 
         //props.currenAngleRef.current = "x: " + tempQuatArm.x.toPrecision(2) + "\ty: " + tempQuatArm.y.toPrecision(2) + "\tz: " + tempQuatArm.z.toPrecision(2) + "\tw: " + tempQuatArm.w.toPrecision(2);
         //props.currenAngleRef.current = "x: " + tempQuatForearm.x.toPrecision(2) + "\ty: " + tempQuatForearm.y.toPrecision(2) + "\tz: " + tempQuatForearm.z.toPrecision(2) + "\tw: " + tempQuatForearm.w.toPrecision(2);
 
-        angle = calculateAngleBetween(tempArmDir, tempForearmDir)
+        angle = calculateAngleBetween(tempArmDir, tempForearmDir).toString()
         //props.currenAngleRef.current = "x: " + tempArmDir.x.toPrecision(2) + "\ty: " + tempArmDir.y.toPrecision(2) + "\tz: " + tempArmDir.z.toPrecision(2);
         props.currenAngleRef.current = "Angle: " + angle;
         //rotateBone(nodes.Arm1, props.arm)
