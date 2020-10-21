@@ -22,6 +22,7 @@ const SensorPrep = ({ navigation }: Props) => {
     const [permissionStatus, setPermissionStatus] = useState("waiting");
     const [connectionStatus, setConnectionStatus] = useState("idle");
     const [view, setView] = useState("sensorPrep")
+    const [lastSSID, setLastSSID] = useState("")
 
     // useEffect(() => {
     //     setTimeout(() => { setModelStatus("ready") }, 1600)
@@ -53,6 +54,13 @@ const SensorPrep = ({ navigation }: Props) => {
         // }, error => console.log("error: " + error))
 
         setConnectionStatus("connecting")
+        WifiManager.getCurrentWifiSSID()
+            .then((ssid: string) => {
+                setLastSSID(ssid)
+            }).catch((err) => {
+                console.log("Retrieving SSID failed")
+            })
+
         WifiManager.connectToProtectedSSID("PhySensors", "classic123", false)
             .then(
                 () => { setConnectionStatus("connected") }
@@ -60,8 +68,6 @@ const SensorPrep = ({ navigation }: Props) => {
                 setConnectionStatus("error");
                 console.log(err)
             })
-
-
     }
 
     const askForUserPermissions = async () => {
@@ -291,7 +297,7 @@ const SensorPrep = ({ navigation }: Props) => {
             </View>
 
             <ErrorBoundary>
-                <ExerciseView modelStatus={setModelStatus} systemStatus={view} />
+                <ExerciseView modelStatus={setModelStatus} systemStatus={view} lastSSID={lastSSID} />
             </ErrorBoundary>
         </>
     );

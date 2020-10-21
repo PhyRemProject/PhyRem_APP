@@ -26,7 +26,8 @@ declare global {
 
 
 interface CalibrationProps {
-    updateRefPosition : Function
+    updateRefPosition: Function,
+    ready: boolean
 }
 
 function SensorCalibration(props: CalibrationProps) {
@@ -61,12 +62,17 @@ function SensorCalibration(props: CalibrationProps) {
                 <Text
                     style={{
                         textAlign: "center",
-                        width: "100%"
+                        width: "100%",
+                        fontFamily: "Rawline-Bold",
+                        color: "#333",
+                        fontSize: 15,
+                        marginTop: -20
                     }}
                 >
                     Coloque-se em posição com os sensores como na imagem
                     </Text>
-                <GradientButton
+
+                {props.ready ? <GradientButton
                     title={"Definir Posição"}
                     onPress={() => {
                         props.updateRefPosition();
@@ -74,7 +80,16 @@ function SensorCalibration(props: CalibrationProps) {
                     }}
                     buttonStyle={{ width: "100%", marginTop: 15, opacity: 10 }}
                     textStyle={{ fontSize: 13 }}
-                />
+                /> : <>
+                <Text
+                    style={{
+                        textAlign: "center",
+                        width: "100%"
+                    }}
+                >
+                    Por favor aguarde ...
+                    </Text></>
+                }
 
             </View>
 

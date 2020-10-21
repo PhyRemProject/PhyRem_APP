@@ -12,6 +12,7 @@ import Model, { QuaternionCoorRefs } from "./Model"
 import GradientButton from "../../Global/GradientButton";
 import SensorCalibration from "./SensorCalibration";
 import AngleProgress from "./AngleProgress";
+import ExerciseEnd from "./ExerciseEnd";
 
 YellowBox.ignoreWarnings(['THREE.WebGLRenderer']);
 
@@ -28,15 +29,23 @@ declare global {
 
 interface ExerciseProps {
     modelStatus: Function,
-    systemStatus: string
+    systemStatus: string,
+    lastSSID: string
 }
 
 function ExerciseView(props: ExerciseProps) {
 
     //const arm = useRef(0)
     const [target, setTarget] = useState("Arm1")
-    
+    const [started, setStarted] = useState(false)
+    const [finished, setFinished] = useState(false)
+    const [wsReady, setWSReady] = useState(false)
+
     const angle = useRef<string>("Angle")
+    const armQuat = useRef<THREE.Quaternion>()
+    const forearmQuat = useRef<THREE.Quaternion>()
+
+    const savedQuaterns = useRef<Object[]>([])
 
     //js websocket
     var ws;
@@ -73,6 +82,9 @@ function ExerciseView(props: ExerciseProps) {
             console.log("connected to sensor!");
 
             ws.onmessage = function (evt) {
+                if (!wsReady)
+                    setWSReady(true)
+
                 let readings = evt.data.split('\r');
                 const [deviceNumb, newW, newX, newY, newZ, deviceNumb2, newW2, newX2, newY2, newZ2] = evt.data.split('\t');
 
@@ -130,19 +142,24 @@ function ExerciseView(props: ExerciseProps) {
     }
 
     useEffect(() => {
-            initConnection();
+        initConnection();
     }, [props.systemStatus]);
 
 
     useEffect(() => {
         const id = setInterval(() => {
-            angle.current = angle.current + 1;
-        }, 500)
-    }, [])
+            if (started && !finished) {
+                savedQuaterns.current.push({
+                    q1: armQuat.current,
+                    q2: forearmQuat.current,
+                })
+            }
+        }, 34)
+    }, [started, finished])
 
     return (
         <>
-            <SensorCalibration updateRefPosition={updateRefPosition}/>
+            <SensorCalibration updateRefPosition={updateRefPosition} ready={wsReady} />
             <View style={{
                 flex: 1,
                 flexWrap: 'wrap',
@@ -182,6 +199,7 @@ function ExerciseView(props: ExerciseProps) {
                                     z: armZ,
                                     w: armW
                                 } as QuaternionCoorRefs}
+                                armQuatRef={armQuat}
                                 forearmOrigin={{
                                     x: forearmOX,
                                     y: forearmOY,
@@ -194,6 +212,7 @@ function ExerciseView(props: ExerciseProps) {
                                     z: forearmZ,
                                     w: forearmW
                                 } as QuaternionCoorRefs}
+                                forearmQuatRef={forearmQuat}
                                 setStatus={props.modelStatus}
                                 currenAngleRef={angle}
                             />
@@ -201,6 +220,7 @@ function ExerciseView(props: ExerciseProps) {
                     </Canvas>
                 </View>
                 <View style={{
+                    display: started ? "none" : "flex",
                     flexDirection: "row",
                     padding: 15,
                     alignContent: "center",
@@ -208,22 +228,52 @@ function ExerciseView(props: ExerciseProps) {
                     width: "100%"
                 }}>
                     <GradientButton
-                        title={"Reset Pos"}
-                        onPress={updateRefPosition}
+                        title={"Iniciar"}
+                        onPress={() => {
+                            updateRefPosition()
+                            setStarted(true)
+                        }}
                         buttonStyle={{ width: "100%", marginTop: 30, opacity: 10 }}
                         textStyle={{ fontSize: 13 }}
                     />
 
                 </View>
                 <View style={{
+                    display: started ? "flex" : "none",
                     flexDirection: "row",
                     padding: 15,
                     alignContent: "center",
                     height: "15%",
                     width: "100%"
                 }}>
-                    <AngleProgress angleRef={angle}/>
+                    <AngleProgress
+                        angleRef={angle}
+                    />
                 </View>
+                <View style={{
+                    display: started ? "flex" : "none",
+                    flexDirection: "row",
+                    marginTop: -15,
+                    paddingLeft: 15,
+                    paddingRight: 15,
+                    alignContent: "center",
+                    height: "15%",
+                    width: "100%"
+                }}>
+                    <GradientButton
+                        title={"Terminar"}
+                        onPress={() => {
+                            setFinished(true)
+                        }}
+                        buttonStyle={{ width: "100%", marginTop: 30, opacity: 10 }}
+                        textStyle={{ fontSize: 13 }}
+                    />
+                </View>
+
+                {
+                    finished ? <ExerciseEnd savedQuatern={savedQuaterns} prevSSID={props.lastSSID}/>:
+                     <></>
+                }
             </View>
         </>
     );
