@@ -5,9 +5,11 @@ import { Text, View } from "react-native";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import NetInfo from '@react-native-community/netinfo';
 import WifiManager, { connectToSSID } from "react-native-wifi-reborn";
-import {SendExercise} from "../ExerciseActions";
+import { SendExercise } from "../ExerciseActions";
 import { useSelector } from "react-redux";
 import UserReducer from "../../User/UserReducer";
+import GradientButton from "../../Global/GradientButton";
+import { useNavigation } from '@react-navigation/native';
 
 export interface ExerciseEnd {
     prevSSID: string,
@@ -19,10 +21,13 @@ function ExerciseEnd(props: ExerciseEnd) {
     const [connectionStatus, setConnectionStatus] = useState("waiting")
     const [status, setStatus] = useState("idle");
     const token = useSelector((state: UserReducer) => state.UserReducer.user?.token) as string
+    const navigation = useNavigation();
 
     const reconnectToLAN = () => {
-
-        WifiManager.disconnect();
+        if (props.prevSSID === "PhySensors")
+            return
+        else
+            WifiManager.disconnect();
         WifiManager.connectToProtectedSSID(props.prevSSID, "", false)
             .then(
                 () => { setConnectionStatus("connected") }
@@ -38,7 +43,7 @@ function ExerciseEnd(props: ExerciseEnd) {
     }, [])
 
     useEffect(() => {
-        if(connectionStatus === "connected")
+        if (connectionStatus === "connected")
             SendExercise(token, props.savedQuatern, setStatus);
     }, [connectionStatus])
 
@@ -56,6 +61,29 @@ function ExerciseEnd(props: ExerciseEnd) {
             <Text style={{ textAlign: "center", width: "100%" }}>
                 Aguarde envio do exercicio...
             </Text>
+            {
+                status === "failed" || status === "systemFail" ?
+                    <GradientButton
+                        title={"Tentar Novamente"}
+                        onPress={() => {
+                            setConnectionStatus("waiting")
+                            reconnectToLAN()
+                        }}
+                        buttonStyle={{ width: "100%", marginTop: 30, opacity: 10 }}
+                        textStyle={{ fontSize: 13 }}
+                    />
+                    :
+                    status === "success" ?
+                    <GradientButton
+                        title={"Voltar ao Início"}
+                        onPress={() => {
+                            navigation.navigate("Dashboard") 
+                        }}
+                        buttonStyle={{ width: "100%", marginTop: 30, opacity: 10 }}
+                        textStyle={{ fontSize: 13 }}
+                    />:
+                    <></>
+            }
 
             {
                 connectionStatus === "waiting" ?
