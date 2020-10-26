@@ -43,8 +43,14 @@ function ExerciseEnd(props: ExerciseEnd) {
     }, [])
 
     useEffect(() => {
-        if (connectionStatus === "connected")
-            SendExercise(token, props.savedQuatern, setStatus);
+        if (connectionStatus === "connected"){
+            console.log("waiting")
+            setTimeout(() => {
+                console.log("submiting")
+                SendExercise(token, props.savedQuatern, setStatus);
+            }, 100)
+
+        }
     }, [connectionStatus])
 
     return (
@@ -58,8 +64,8 @@ function ExerciseEnd(props: ExerciseEnd) {
             backgroundColor: "#FFF",
         }}>
 
-            <Text style={{ textAlign: "center", width: "100%" }}>
-                Aguarde envio do exercicio...
+            <Text style={{fontFamily: "Rawline-Bold", color: "#5954DB", textAlign: "center", width: "100%", marginTop: "30%" }}>
+                Por favor, aguarde envio do exercicio...
             </Text>
             {
                 status === "failed" || status === "systemFail" ?
@@ -69,7 +75,7 @@ function ExerciseEnd(props: ExerciseEnd) {
                             setConnectionStatus("waiting")
                             reconnectToLAN()
                         }}
-                        buttonStyle={{ width: "100%", marginTop: 30, opacity: 10 }}
+                        buttonStyle={{ width: "100%", marginTop: 60, opacity: 10}}
                         textStyle={{ fontSize: 13 }}
                     />
                     :
@@ -79,7 +85,7 @@ function ExerciseEnd(props: ExerciseEnd) {
                         onPress={() => {
                             navigation.navigate("Dashboard") 
                         }}
-                        buttonStyle={{ width: "100%", marginTop: 30, opacity: 10 }}
+                        buttonStyle={{ width: "100%", marginTop: 60, opacity: 10 }}
                         textStyle={{ fontSize: 13 }}
                     />:
                     <></>
@@ -87,11 +93,11 @@ function ExerciseEnd(props: ExerciseEnd) {
 
             {
                 connectionStatus === "waiting" ?
-                    <Text style={{ textAlign: "center", width: "100%" }}>
+                    <Text style={{ textAlign: "center", width: "100%", marginTop: 30 }}>
                         A repor ligação a: {props.prevSSID}
                     </Text> :
                     connectionStatus === "connected" ?
-                        <Text style={{ textAlign: "center", width: "100%" }}>
+                        <Text style={{ textAlign: "center", width: "100%", marginTop: 30 }}>
                             A submeter ...
                         </Text> : <></>
             }
