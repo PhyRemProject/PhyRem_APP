@@ -18,7 +18,7 @@ export interface ExerciseEnd {
 
 function ExerciseEnd(props: ExerciseEnd) {
 
-    const [connectionStatus, setConnectionStatus] = useState("waiting")
+    const [connectionStatus, setConnectionStatus] = useState("connected")
     const [status, setStatus] = useState("idle");
     const token = useSelector((state: UserReducer) => state.UserReducer.user?.token) as string
     const navigation = useNavigation();
@@ -43,7 +43,7 @@ function ExerciseEnd(props: ExerciseEnd) {
     }, [])
 
     useEffect(() => {
-        if (connectionStatus === "connected"){
+        if (connectionStatus === "connected") {
             console.log("waiting")
             setTimeout(() => {
                 console.log("submiting")
@@ -64,9 +64,18 @@ function ExerciseEnd(props: ExerciseEnd) {
             backgroundColor: "#FFF",
         }}>
 
-            <Text style={{fontFamily: "Rawline-Bold", color: "#5954DB", textAlign: "center", width: "100%", marginTop: "30%" }}>
-                Por favor, aguarde envio do exercicio...
-            </Text>
+
+            {
+                status !== "success" ?
+                <Text style={{ fontFamily: "Rawline-Bold", color: "#5954DB", textAlign: "center", width: "100%", marginTop: "30%" }}>
+                    Por favor, aguarde envio do exercicio...
+                </Text>
+                :
+                <Text style={{ fontFamily: "Rawline-Bold", color: "#5954DB", textAlign: "center", width: "100%", marginTop: "30%" }}>
+                    Concluído!
+                </Text>
+            }
+
             {
                 status === "failed" || status === "systemFail" ?
                     <GradientButton
@@ -75,20 +84,27 @@ function ExerciseEnd(props: ExerciseEnd) {
                             setConnectionStatus("waiting")
                             reconnectToLAN()
                         }}
-                        buttonStyle={{ width: "100%", marginTop: 60, opacity: 10}}
+                        buttonStyle={{ width: "100%", marginTop: 60, opacity: 10 }}
                         textStyle={{ fontSize: 13 }}
                     />
                     :
                     status === "success" ?
-                    <GradientButton
-                        title={"Voltar ao Início"}
-                        onPress={() => {
-                            navigation.navigate("Dashboard") 
-                        }}
-                        buttonStyle={{ width: "100%", marginTop: 60, opacity: 10 }}
-                        textStyle={{ fontSize: 13 }}
-                    />:
-                    <></>
+                        <>
+                            <FontAwesomeIcon 
+                            icon={faCheckCircle} 
+                            style={{ color: "#00DD55", width: "200px", alignSelf: "center", margin: 30 }} 
+                            size={90}/>
+                            <GradientButton
+                                title={"Voltar ao Início"}
+                                onPress={() => {
+                                    navigation.navigate("Dashboard")
+                                }}
+                                buttonStyle={{ width: "80%", marginTop: 60, opacity: 10, alignSelf: "center" }}
+                                textStyle={{ fontSize: 13 }}
+                            />
+                        </>
+                        :
+                        <></>
             }
 
             {
@@ -96,7 +112,7 @@ function ExerciseEnd(props: ExerciseEnd) {
                     <Text style={{ textAlign: "center", width: "100%", marginTop: 30 }}>
                         A repor ligação a: {props.prevSSID}
                     </Text> :
-                    connectionStatus === "connected" ?
+                    connectionStatus === "connected" && status !== "success" ?
                         <Text style={{ textAlign: "center", width: "100%", marginTop: 30 }}>
                             A submeter ...
                         </Text> : <></>

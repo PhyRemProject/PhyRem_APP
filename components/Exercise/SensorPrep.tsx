@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Dimensions, Image, Button, PermissionsAndroid } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, Image, Button, PermissionsAndroid, YellowBox} from 'react-native';
 import { useSelector, useDispatch } from "react-redux"
 import { NavigationStackProp } from 'react-navigation-stack';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
@@ -15,6 +15,8 @@ import SensorCalibration from './ExerciseView/SensorCalibration';
 type Props = {
     navigation: NavigationStackProp<{ userId: string }>;
 };
+
+YellowBox.ignoreWarnings(['Render methods']);
 
 const SensorPrep = ({ navigation }: Props) => {
 
