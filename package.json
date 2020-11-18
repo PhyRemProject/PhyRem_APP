@@ -33,6 +33,7 @@
     "react": "16.13.1",
     "react-dom": "~16.9.0",
     "react-native": "0.63.2",
+    "react-native-calendars": "^1.403.0",
     "react-native-elements": "^1.2.7",
     "react-native-fs": "^2.16.6",
     "react-native-gesture-handler": "^1.5.6",
