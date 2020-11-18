@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Dimensions, Image } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, Image, Button } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSelector, useDispatch } from "react-redux"
 import { NavigationStackProp } from 'react-navigation-stack';
-import UserReducer, { USER_LOGIN } from '../User/UserReducer';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import UserReducer, { ADD_PROGRESS, RESET_PROGRESS, USER_LOGIN } from '../User/UserReducer';
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { SERVICE_API } from '../../constants';
+import { HeaderHeightContext } from '@react-navigation/stack';
+import GradientButton from '../Global/GradientButton';
 
 type Props = {
     navigation: NavigationStackProp<{ userId: string }>;
@@ -15,21 +17,24 @@ type Props = {
 const Dashboard = ({ navigation }: Props) => {
 
     const token = useSelector((state: UserReducer) => state.UserReducer.user?.token) as string
+    const progress = useSelector((state: UserReducer) => state.UserReducer.progress) as number
     const patientID = useSelector((state: UserReducer) => state.UserReducer.user?._id) as string
     const patientName = useSelector((state: UserReducer) => state.UserReducer.user?.name) as string
     const [status, setStatus] = useState("idle")
     const dispatch = useDispatch()
     console.log(token)
 
-
+    
 
     return (
-        <>
+        <View style={{
+            width: "100%",
+            height: "100%"
+        }}>
             <View style={{
-                flex: 1,
-                flexWrap: 'wrap',
-                flexDirection: "row",
-                maxHeight: "30%"
+                width: "100%",
+                flexDirection: "column",
+                height: "36%"
             }}>
                 <LinearGradient
                     // Background Linear Gradient
@@ -37,6 +42,7 @@ const Dashboard = ({ navigation }: Props) => {
                     start={[0, 1]}
                     end={[0.8, 0]}
                     style={{
+                        zIndex: -1,
                         position: 'absolute',
                         left: 0,
                         right: 0,
@@ -45,15 +51,19 @@ const Dashboard = ({ navigation }: Props) => {
                     }}
                 />
                 <View style={{
+                    zIndex: 2,
                     flexDirection: "row",
                     padding: 15,
                     alignContent: "center",
+                    width: "100%",
+                    height: "40%"
                 }}>
-                    <View style={{ alignSelf: "flex-start", flexBasis: "70%" }}>
+                    <View style={{ width: "40%" }}>
                         <Text style={{ fontFamily: "Rawline", color: "white", fontSize: 22, }}>Olá</Text>
                         <Text style={{ fontFamily: "Rawline-Bold", color: "white", fontSize: 25, lineHeight: 27 }}>{patientName.split(" ")[0]}!</Text>
                     </View>
-                    <View style={{ alignSelf: "flex-end", flexBasis: "30%" }}>
+                    <View style={{ width: "30%" }}></View>
+                    <View style={{ width: "30%" }}>
                         {/* <Image source={require("../../assets/images/user.png")} style={{ height: 70, width: 70, borderRadius: 70 / 2, alignSelf: "center" }} /> */}
                         <TouchableOpacity onPress={() => { navigation.navigate("Settings") }}>
                             <Image
@@ -63,125 +73,143 @@ const Dashboard = ({ navigation }: Props) => {
                             />
                         </TouchableOpacity>
                     </View>
-
                 </View>
                 <View style={{
-                    flexDirection: "row",
-                    paddingLeft: 15,
-                    paddingRight: 15,
-                    alignContent: "center",
+                    flexDirection: "column",
+                    marginTop: 15,
+                    width: "100%",
+                    height: "60%"
                 }}>
-                    <View style={{ alignSelf: "flex-start", flexDirection: "row", flexBasis: "100%" }}>
+                    <View style={{ paddingLeft: 15 }}>
                         <Text style={{ fontFamily: "Rawline", color: "white", fontSize: 15 }}>Progresso da semana</Text>
                     </View>
+                    <View style={{
+                        width: "100%",
+                        flexDirection: "row",
+                        marginTop: 10,
+                        height: 50,
+                        paddingLeft: 15,
+                        paddingRight: 15,
+                        alignContent: "center",
+                    }}>
+                        <View style={{
+                            zIndex: 4,
+                            height: 50,
+                            width: "100%",
+                            backgroundColor: "rgba(165,162,240,0.78)",
+                            borderRadius: 10,
+                        }}>
+                            <View style={{
+                                minWidth: "8%", 
+                                height: 50,
+                                width: Math.min(33.3 * progress, 100) + "%",
+                                backgroundColor: "rgba(102, 6, 212,1)",
+                                borderRadius: 10,
+                            }}>
+                                <Text style={{ fontFamily: "Rawline-Bold", color: "white", fontSize: 15, textAlignVertical: "center", alignSelf: "center" }}>{(Math.min(33.3 * progress, 100)).toFixed(0)}%</Text>
+                            </View>
+                        </View>
+                    </View >
+                </View >
+            </View>
+
+
+            <View style={{
+                flex: 1,
+                flexDirection: "row",
+                flexWrap: 'wrap',
+                height: "60%",
+                paddingTop: 10,
+                backgroundColor: "white"
+            }}>
+                <View style={{
+                    height: "30%",
+                    width: "47%",
+                    marginLeft: "2%",
+                    backgroundColor: "#8582E4",
+                    borderRadius: 10, paddingLeft: 10, paddingRight: 10, paddingTop: 5, paddingBottom: 5
+                }}>
+                    <Text style={{
+                        fontFamily: "Rawline",
+                        fontSize: 12,
+                        alignSelf: "flex-start",
+                        color: "#FFF"
+                    }}>
+                        Próxima Consulta
+                              </Text>
+                    <View style={{
+                        flexDirection: "row",
+                        flexWrap: "wrap",
+                        height: "70%",
+                        alignContent: "center"
+                    }}>
+                        <Text style={{
+                            fontFamily: "Rawline-Bold",
+                            fontSize: 18,
+                            width: "100%",
+                            color: "#FFF",
+                            textAlignVertical: "center"
+                        }}>23 Janeiro</Text>
+                        <Text style={{
+                            fontFamily: "Rawline-Bold",
+                            fontSize: 15,
+                            width: "100%",
+                            color: "#FFF",
+                            textAlignVertical: "center"
+                        }}>Dr. Super Doc</Text>
+                    </View>
                 </View>
                 <View style={{
                     flexDirection: "row",
-                    marginTop: 5,
-                    height: 50,
-                    marginLeft: 15,
-                    marginRight: 15,
-                    alignContent: "center",
+                    flexWrap: "wrap",
+                    height: "30%",
+                    width: "47%",
+                    marginLeft: "2%",
+                    marginRight: "2%",
+                    backgroundColor: "rgba(215,214,255,1.0)",
+                    borderRadius: 10, paddingLeft: 10, paddingRight: 10, paddingTop: 5, paddingBottom: 5
                 }}>
-                    <View style={{
-                        alignSelf: "flex-start", flexDirection: "row", height: 50,
-                        flexBasis: "100%", backgroundColor: "rgba(165,162,240,0.78)",
-                        borderRadius: 10,
-                        shadowColor: "#000",
-                        shadowOffset: {
-                            width: 0,
-                            height: 5,
-                        },
-                        shadowOpacity: 0.36,
-                        shadowRadius: 6.68,
-                        elevation: 11
+                    <Text style={{ fontFamily: "Rawline", height: "25%", width: "100%", color: "#6F6CB0" }}>Próxima Actividade</Text>
+                    <Text style={{
+                        fontFamily: "Rawline-Bold",
+                        height: "75%",
+                        width: "100%",
+                        color: "#6F6CB0",
+                        textAlign: "center",
+                        textAlignVertical: "center"
+                    }}>Cotovelo Direito</Text>
+                </View>
+
+                <View style={{
+                    height: "69%",
+                    width: "96%",
+                    marginTop: "2%",
+                    marginLeft: "2%",
+                    marginRight: "2%",
+                    backgroundColor: "rgba(215,214,255,1.0)",
+                    borderRadius: 10,
+                    padding: 10,
+                }}>
+                    <Text style={{ fontFamily: "Rawline-Bold", width: "100%", color: "#6F6CB0" }}>Actividades</Text>
+                    <ScrollView style={{
+                        height: "100%",
                     }}>
-                        <View style={{
-                            alignSelf: "flex-start", width: "8%", height: 50,
-                            backgroundColor: "rgba(120,75,250,1.0)",
-                            borderRadius: 10,
-                            shadowColor: "#FFFFFF",
-                            shadowOffset: {
-                                width: 5,
-                                height: 5,
-                            },
-                            shadowOpacity: 1.0,
-                            shadowRadius: 6.68,
-                            elevation: 3
-                        }}>
-                            <Text style={{ fontFamily: "Rawline-Bold", color: "white", fontSize: 15, textAlignVertical: "center", alignSelf: "center" }}>0%</Text>
-                        </View>
-                    </View>
-                </View >
-            </View >
+                        <Text style={{
+                            fontFamily: "Rawline",
+                            color: "#6F6CB0",
+                            width: "100%",
+                            height: "100%",
+                            textAlign: "center",
+                            paddingTop: "25%",
+                        }}>Está um pouco parado 😕</Text>
 
-            {/* <View style={{
-                flex: 1,
-                flexWrap: 'wrap',
-                flexDirection: "row",
-                maxHeight: "11%",
-                padding: 10,
-                backgroundColor: "white"
-            }}>
-                <View style={{
-                    alignSelf: "flex-start", flexDirection: "row", height: 50,
-                    flexBasis: "100%", backgroundColor: "rgba(215,214,255,1.0)",
-                    borderRadius: 10, paddingLeft: 10
-                }}>
-                    <Text style={{ alignSelf: "center", color: "#6F6CB0" }}>Última notificação</Text>
+                        {/* <Text style={{ color: "#6F6CB0", width: "100%", height: 500 }}>{token}</Text> */}
+                    </ScrollView>
                 </View>
-            </View>
- */}
-            <View style={{
-                flex: 1,
-                flexWrap: 'wrap',
-                flexDirection: "row",
-                maxHeight: "18%",
-                paddingTop: 10,
-                paddingLeft: 10,
-                backgroundColor: "white"
-            }}>
-                <View style={{
-                    alignSelf: "flex-start", flexDirection: "row", height: "100%",
-                    flexBasis: "49%", backgroundColor: "#8582E4",
-                    borderRadius: 10, paddingLeft: 10, paddingRight: 5
-                }}>
-                    <Text style={{ alignSelf: "flex-start", color: "#FFF" }}>Próxima Consulta</Text>
-                </View>
-                <View style={{
-                    alignSelf: "flex-start", flexDirection: "row", height: "100%",
-                    flexBasis: "47%", backgroundColor: "rgba(215,214,255,1.0)",
-                    borderRadius: 10, paddingLeft: 5, paddingRight: 5, marginLeft: 5
-                }}>
-                    <Text style={{ alignSelf: "flex-start", color: "#6F6CB0" }}>Próxima Actividade</Text>
-                </View>
+
             </View>
 
-            <View style={{
-                flex: 1,
-                flexWrap: 'wrap',
-                flexDirection: "row",
-                maxHeight: "50%",
-                padding: 10,
-                backgroundColor: "white"
-            }}>
-                <View style={{
-                    alignSelf: "flex-start", flexDirection: "row", height: "100%",
-                    flexBasis: "100%", backgroundColor: "rgba(215,214,255,1.0)",
-                    borderRadius: 10, paddingLeft: 10
-                }}>
-                    <Text style={{ alignSelf: "flex-start", textAlign: "center", color: "#6F6CB0" }}>Feed</Text>
-                    <Text style={{ alignSelf: "center", color: "#6F6CB0" }}>{token}</Text>
-                </View>
-            </View>
-
-            {/* <View style={styles.container}>
-                <Text>This app test wifi network switching.</Text>
-                <Text>Go to settings</Text>
-                <Button title="Settings" onPress={changeToSettings} />
-                <Button title="3D Vis" onPress={changeToVis} />
-            </View> */}
-        </>
+        </View>
     );
 }
 

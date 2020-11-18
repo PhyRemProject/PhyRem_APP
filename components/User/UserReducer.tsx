@@ -5,7 +5,7 @@ import { PURGE } from 'redux-persist'
 export interface UserInterface {
     _id: string | null,
     email: string | null,
-    password : string | null,
+    password: string | null,
     token: string | null,
 
     role: string | null,
@@ -26,6 +26,7 @@ export interface UserReducer {
 //Interface for the state used by this reducer (required by TS)
 export interface UserStateInterface {
     user: UserInterface | null,
+    progress: number,
     isLogging: boolean,
     isUpdating: boolean,
     isFetching: boolean
@@ -36,6 +37,8 @@ export const USER_LOGIN = "USER_LOGIN"
 export const USER_LOGIN_COMPLETE = "USER_LOGIN_COMPLETE"
 export const USER_LOGIN_FAILED = "USER_LOGIN_FAILED"
 export const USER_LOGOUT = "USER_LOGOUT"
+export const ADD_PROGRESS = "ADD_PROGRESS"
+export const RESET_PROGRESS = "RESET_PROGRESS"
 
 // Interface for the actions above (required by TS)
 interface LoginAction extends Action {
@@ -46,6 +49,7 @@ interface LoginAction extends Action {
 // Implementing the userStateInterface, setting the initial state
 const userInitState = {
     user: null,
+    progress: 0,
     isLogging: false,
     isUpdating: false,
     isFetching: false
@@ -92,6 +96,18 @@ export function UserReducer(state = userInitState, action: Action | LoginAction)
             return {
                 ...state,
                 user: null
+            };
+
+        case ADD_PROGRESS:
+            return {
+                ...state,
+                progress: state.progress + 1
+            };
+
+        case RESET_PROGRESS:
+            return {
+                ...state,
+                progress: 0
             };
 
 

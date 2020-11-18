@@ -6,8 +6,8 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import NetInfo from '@react-native-community/netinfo';
 import WifiManager, { connectToSSID } from "react-native-wifi-reborn";
 import { SendExercise } from "../ExerciseActions";
-import { useSelector } from "react-redux";
-import UserReducer from "../../User/UserReducer";
+import { useDispatch, useSelector } from "react-redux";
+import UserReducer, { ADD_PROGRESS } from "../../User/UserReducer";
 import GradientButton from "../../Global/GradientButton";
 import { useNavigation } from '@react-navigation/native';
 
@@ -22,6 +22,7 @@ function ExerciseEnd(props: ExerciseEnd) {
     const [status, setStatus] = useState("idle");
     const token = useSelector((state: UserReducer) => state.UserReducer.user?.token) as string
     const navigation = useNavigation();
+    const dispatch = useDispatch();
 
     const reconnectToLAN = () => {
         if (props.prevSSID === "PhySensors")
@@ -52,6 +53,15 @@ function ExerciseEnd(props: ExerciseEnd) {
 
         }
     }, [connectionStatus])
+
+
+    useEffect(() => {
+        if (status === "success") {
+            dispatch(() => (dispatch({
+                type: ADD_PROGRESS
+            })));
+        }
+    }, [status])
 
     return (
 
