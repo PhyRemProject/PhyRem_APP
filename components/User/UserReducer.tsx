@@ -17,6 +17,19 @@ export interface UserInterface {
 
 }
 
+export interface SignUpUser {
+    email: string | null,
+    password: string | null,
+    name: string | null,
+    role: string | null,
+    gender: string | null,
+    birthDate: Date | null,
+    address: string | null,
+    identificationNum: number | null,
+    fiscalNumber: number | null,
+    phoneNumber: number | null,
+}
+
 //The interface that exports the state of the UserReducer as UserReducer
 //  so that it can be used elsewhere
 export interface UserReducer {
@@ -26,6 +39,7 @@ export interface UserReducer {
 //Interface for the state used by this reducer (required by TS)
 export interface UserStateInterface {
     user: UserInterface | null,
+    signup: SignUpUser | null,
     progress: number,
     isLogging: boolean,
     isUpdating: boolean,
@@ -39,16 +53,26 @@ export const USER_LOGIN_FAILED = "USER_LOGIN_FAILED"
 export const USER_LOGOUT = "USER_LOGOUT"
 export const ADD_PROGRESS = "ADD_PROGRESS"
 export const RESET_PROGRESS = "RESET_PROGRESS"
+export const SIGN_UP_PART1 = "SIGN_UP_PART1"
+export const SIGN_UP_PART2 = "SIGN_UP_PART2"
+export const SIGN_UP_SUBMIT = "SIGN_UP_SUBMIT"
+export const SIGN_UP_FAIL = "SIGN_UP_FAIL"
+export const SIGN_UP_COMPLETE = "SIGN_UP_COMPLETE"
+
 
 // Interface for the actions above (required by TS)
 interface LoginAction extends Action {
     payload: UserInterface
 }
 
+interface SignupAction extends Action {
+    payload: SignUpUser
+}
 
 // Implementing the userStateInterface, setting the initial state
 const userInitState = {
     user: null,
+    signup: null,
     progress: 0,
     isLogging: false,
     isUpdating: false,
@@ -110,6 +134,54 @@ export function UserReducer(state = userInitState, action: Action | LoginAction)
                 progress: 0
             };
 
+        case SIGN_UP_PART1:
+            return {
+                ...state,
+                signup: {
+                    ...state.signup,
+
+                    role: "PATIENT",
+                    name: (action as SignupAction).payload.name,
+                    email: (action as SignupAction).payload.email,
+                    password: (action as SignupAction).payload.password,
+                    birthDate: (action as SignupAction).payload.birthDate,
+                    gender: (action as SignupAction).payload.gender,
+
+                }
+            };
+
+        case SIGN_UP_PART2:
+            return {
+                ...state,
+                signup: {
+                    ...state.signup,
+
+                    phoneNumber: (action as SignupAction).payload.phoneNumber,
+                    address: (action as SignupAction).payload.address,
+                    identificationNum: (action as SignupAction).payload.identificationNum,
+                    fiscalNumber: (action as SignupAction).payload.fiscalNumber,
+
+                }
+            };
+
+        case SIGN_UP_SUBMIT:
+            return {
+                ...state,
+                isUpdating: true
+            };
+
+
+        case SIGN_UP_FAIL:
+            return {
+                ...state,
+                isUpdating: false
+            };
+
+        case SIGN_UP_COMPLETE:
+            return {
+                ...state,
+                isUpdating: false
+            };
 
         case PURGE:
             return userInitState;

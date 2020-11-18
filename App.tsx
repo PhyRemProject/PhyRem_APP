@@ -4,6 +4,7 @@ import { useFonts } from "expo-font"
 import { Provider, useSelector } from "react-redux"
 import Navigation from './components/Navigation/Navigation';
 import UserReducer from './components/User/UserReducer';
+import FlashMessage from 'react-native-flash-message';
 
 const App = () => {
 
@@ -41,9 +42,10 @@ const App = () => {
   } else {
 
   return (
-    <>
+    <View style={{flex: 1}}>
       <Navigation loggedIn={email !== undefined} />
-    </>
+      <FlashMessage position="top" /> 
+    </View>
   );
 }
 }

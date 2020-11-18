@@ -85,7 +85,7 @@ const Welcome = ({ navigation }: Props) => {
                     >
                         <Text
                             style={{ fontFamily: "Rawline", color: "#FFF", fontSize: 17, width: "100%", height: "100%", textAlign: "center" }}
-                            onPress={() => { dispatch(AttemptLogin("other7@gmail.com", "qwe123", setStatus)) }}
+                            onPress={() => { navigation.navigate("SignUp") }}
                         >
 
                             Quero-me inscrever

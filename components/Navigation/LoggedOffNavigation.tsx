@@ -3,6 +3,7 @@ import { NavigationContainer, BaseNavigationContainer } from '@react-navigation/
 import { createStackNavigator } from '@react-navigation/stack';
 import Welcome from '../Initial/Welcome';
 import Login from '../Initial/Login';
+import SignUp from '../Initial/SignUp';
 
 
 
@@ -15,7 +16,7 @@ const LoggedOffNavigation = () => {
             <Stack.Navigator initialRouteName="Welcome">
                 <Stack.Screen name="Welcome" component={Welcome} options={{headerShown : false}}/>
                 <Stack.Screen name="Login" component={Login} options={{headerShown : false}}/>
-                {/* <Stack.Screen name="Signup" component={SignUp} /> */}
+                <Stack.Screen name="SignUp" component={SignUp} options={{headerShown : false}}/>
             </Stack.Navigator>
         </NavigationContainer>
     );
