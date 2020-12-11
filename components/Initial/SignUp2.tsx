@@ -189,18 +189,24 @@ const SignUp2 = ({ navigation }: Props) => {
                             <GradientButton
                                 title={"Registar"}
                                 onPress={() => {
-                                    dispatch(() => (dispatch({
-                                        type: SIGN_UP_PART2,
-                                        payload: {
+                                    // dispatch(() => (dispatch({
+                                    //     type: SIGN_UP_PART2,
+                                    //     payload: {
+                                    //         phoneNumber: number,
+                                    //         address: address,
+                                    //         identificationNum: idNum,
+                                    //         fiscalNumber: fiscalNum
+                                    //     }
+                                    // })))
+                                    //setTimeout(() => {
+                                        dispatch(CreateNewPatient({
+                                            ...signupPatient,
                                             phoneNumber: number,
                                             address: address,
                                             identificationNum: idNum,
                                             fiscalNumber: fiscalNum
-                                        }
-                                    })))
-                                    setTimeout(() => {
-                                        dispatch(CreateNewPatient(signupPatient, photo ))
-                                    }, 500)
+                                        }, photo ))
+                                    //}, 500)
                                 }}
                                 buttonStyle={{
                                     width: "100%",

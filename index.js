@@ -6,7 +6,7 @@ import { name as appName } from './app.json';
 import App from './App';
 import Store from './components/Redux/Store'
 
-//console.disableYellowBox = true
+console.disableYellowBox = true
 
 const Root = () => (
     <Provider store={Store.store}>

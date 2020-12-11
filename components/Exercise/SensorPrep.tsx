@@ -287,12 +287,12 @@ const SensorPrep = ({ navigation }: Props) => {
                         }
 
 
-                        <GradientButton
+                        {/* <GradientButton
                             title={"Continuar (DEBUG)"}
                             onPress={() => { setView("calibration") }}
                             buttonStyle={{ width: "100%", marginTop: 30, opacity: 10 }}
                             textStyle={{ fontSize: 13 }}
-                        />
+                        /> */}
 
                     </View>
                 </View>
