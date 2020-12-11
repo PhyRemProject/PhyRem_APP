@@ -172,7 +172,7 @@ const SignUp1 = ({ navigation }: Props) => {
                         style={{ fontFamily: "Rawline", height: 25, width: "95%", borderColor: "#5954DB", borderStyle: "solid", borderWidth: 1, borderTopWidth: 0, borderRightWidth: 0, borderLeftWidth: 0 }}
                         onPress={showDatepicker}
 
-                    >{birthdate.getDate() + "/" + birthdate.getMonth() + 1 + "/" + birthdate.getFullYear()}</Text>
+                    >{birthdate.getDate() + "/" + (birthdate.getMonth() + 1).toString() + "/" + birthdate.getFullYear()}</Text>
                     {show && (
                         <DateTimePicker
                             testID="dateTimePicker"

@@ -24,18 +24,28 @@ function ExerciseEnd(props: ExerciseEnd) {
     const navigation = useNavigation();
     const dispatch = useDispatch();
 
+    const [internet, setInternetStatus] = useState<any>()
+
+    useEffect(() => {
+        setInterval(() => {
+            NetInfo.fetch().then(state => {
+                setInternetStatus(state.isConnected)
+            });
+        }, 500)
+    }, [])
+
     const reconnectToLAN = () => {
-        if (props.prevSSID === "PhySensors")
-            return
-        else
+        if (props.prevSSID !== "PhySensors") {
+
             WifiManager.disconnect();
-        WifiManager.connectToProtectedSSID(props.prevSSID, "", false)
-            .then(
-                () => { setConnectionStatus("connected") }
-            ).catch((err) => {
-                setConnectionStatus("error");
-                console.log(err)
-            })
+            WifiManager.connectToProtectedSSID(props.prevSSID, "", false)
+                .then(
+                    () => { setConnectionStatus("connected") }
+                ).catch((err) => {
+                    setConnectionStatus("error");
+                    console.log(err)
+                })
+        }
 
     }
 
@@ -44,15 +54,14 @@ function ExerciseEnd(props: ExerciseEnd) {
     }, [])
 
     useEffect(() => {
-        if (connectionStatus === "connected") {
-            console.log("waiting")
-            setTimeout(() => {
-                console.log("submiting")
-                SendExercise(token, props.savedQuatern, setStatus);
-            }, 100)
 
+        if (internet && status === "idle" || status === "systemFail" || status === "failed") {
+            console.log("Internet Detected")
+            console.log("submiting")
+            SendExercise(token, props.savedQuatern, setStatus);
         }
-    }, [connectionStatus])
+
+    }, [internet])
 
 
     useEffect(() => {
@@ -77,13 +86,24 @@ function ExerciseEnd(props: ExerciseEnd) {
 
             {
                 status !== "success" ?
-                <Text style={{ fontFamily: "Rawline-Bold", color: "#5954DB", textAlign: "center", width: "100%", marginTop: "30%" }}>
-                    Por favor, aguarde envio do exercicio...
+                    <Text style={{ fontFamily: "Rawline-Bold", color: "#5954DB", textAlign: "center", width: "100%", marginTop: "30%" }}>
+                        Por favor, aguarde envio do exercicio...
                 </Text>
-                :
-                <Text style={{ fontFamily: "Rawline-Bold", color: "#5954DB", textAlign: "center", width: "100%", marginTop: "30%" }}>
-                    Concluído!
+                    :
+                    <Text style={{ fontFamily: "Rawline-Bold", color: "#5954DB", textAlign: "center", width: "100%", marginTop: "30%" }}>
+                        Concluído!
                 </Text>
+            }
+
+            {
+                connectionStatus === "waiting" ?
+                    <Text style={{ textAlign: "center", width: "100%", marginTop: 30 }}>
+                        A repor ligação a: {props.prevSSID}
+                    </Text> :
+                    connectionStatus === "connected" && status !== "success" ?
+                        <Text style={{ textAlign: "center", width: "100%", marginTop: 30 }}>
+                            A submeter ...
+            </Text> : <></>
             }
 
             {
@@ -100,10 +120,10 @@ function ExerciseEnd(props: ExerciseEnd) {
                     :
                     status === "success" ?
                         <>
-                            <FontAwesomeIcon 
-                            icon={faCheckCircle} 
-                            style={{ color: "#00DD55", width: "200px", alignSelf: "center", margin: 30 }} 
-                            size={90}/>
+                            <FontAwesomeIcon
+                                icon={faCheckCircle}
+                                style={{ color: "#00DD55", width: "200px", alignSelf: "center", margin: 30 }}
+                                size={90} />
                             <GradientButton
                                 title={"Voltar ao Início"}
                                 onPress={() => {
@@ -117,16 +137,6 @@ function ExerciseEnd(props: ExerciseEnd) {
                         <></>
             }
 
-            {
-                connectionStatus === "waiting" ?
-                    <Text style={{ textAlign: "center", width: "100%", marginTop: 30 }}>
-                        A repor ligação a: {props.prevSSID}
-                    </Text> :
-                    connectionStatus === "connected" && status !== "success" ?
-                        <Text style={{ textAlign: "center", width: "100%", marginTop: 30 }}>
-                            A submeter ...
-                        </Text> : <></>
-            }
         </View>
     );
 }
