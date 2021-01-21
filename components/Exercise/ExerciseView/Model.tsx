@@ -9,6 +9,7 @@ import { SERVICE_URL } from "../../../constants"
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Asset } from 'expo-asset';
 import { Euler } from "three";
+import Axis, { SingleAxis } from "./3DAxis";
 
 export interface QuaternionCoorRefs {
     x: React.MutableRefObject<number>,
@@ -132,7 +133,7 @@ const Model = ({ ...props }) => {
     const group = useRef()
     const material = useRef()
 
-    const loaded = useLoader(GLTFLoader, SERVICE_URL + "/objects/BodyRigged.glb");
+    const loaded = useLoader(GLTFLoader, SERVICE_URL + "/objects/BodyRigged_arm_only.glb");
 
     const [object, bones, skeleton] = useMemo(() => {
         if (!(loaded as any).bones) (loaded as any).bones = loaded.scene.children[0].children[0];
@@ -147,11 +148,47 @@ const Model = ({ ...props }) => {
     const nodes = (loaded as any).nodes
     let tempArmDir = new THREE.Vector3;
     let tempForearmDir = new THREE.Vector3;
+
+    let armPos = new THREE.Vector3;
+    let forearmPos = new THREE.Vector3;
+
+    let armWorldQuatern = new THREE.Quaternion;
+    let forearmWorldQuatern = new THREE.Quaternion;
+
     let armQuatern = new THREE.Quaternion;
     let forearmQuatern = new THREE.Quaternion;
+
     let angle = "";
 
+    
+    let armAxisGroup = useRef(THREE.Object3D)
+    let armAxis = useRef<THREE.Object3D>()
+
+    let forearmAxisGroup = useRef(THREE.Object3D)
+    let forearmAxis = useRef<THREE.Object3D>()
+
+    let correctedAxisArm = useRef<THREE.Object3D>()
+    let correctedAxisForearm = useRef<THREE.Object3D>()
+
     useFrame((state, delta) => {
+
+         (armAxisGroup.current as THREE.Object3D).position.set(armPos.x, armPos.y, armPos.z);
+         (armAxisGroup.current as THREE.Object3D).rotation.setFromQuaternion(armWorldQuatern);
+
+         (forearmAxisGroup.current as THREE.Object3D).position.set(forearmPos.x, forearmPos.y, forearmPos.z);
+        (forearmAxisGroup.current as THREE.Object3D).rotation.setFromQuaternion(forearmWorldQuatern);
+
+        let armAxisVec = new THREE.Vector3;
+        (armAxis.current as THREE.Object3D).getWorldDirection(armAxisVec);
+
+        // (correctedAxisArm.current as THREE.Object3D).position.set(armPos.x, armPos.y, armPos.z);
+        // (correctedAxisArm.current as THREE.Object3D).setRotationFromEuler(new THREE.Euler(armAxisVec.x, 0, 0));
+
+        let forearmAxisVec = new THREE.Vector3;
+        (forearmAxis.current as THREE.Object3D).getWorldDirection(forearmAxisVec);
+        
+        // (correctedAxisForearm.current as THREE.Object3D).position.set(forearmPos.x, forearmPos.y, forearmPos.z);
+        // (correctedAxisForearm.current as THREE.Object3D).setRotationFromEuler(new THREE.Euler(forearmAxisVec.x, 0, 0));
 
         rotateBone(nodes.Arm0, props.arm, props.armOrigin);
         rotateBone(nodes.Arm1, props.forearm, props.forearmOrigin);
@@ -159,9 +196,15 @@ const Model = ({ ...props }) => {
         (nodes.Arm0 as THREE.Bone).getWorldDirection(tempArmDir);
         (nodes.Arm1 as THREE.Bone).getWorldDirection(tempForearmDir);
 
+        (nodes.Arm0 as THREE.Bone).getWorldPosition(armPos);
+        (nodes.Arm1 as THREE.Bone).getWorldPosition(forearmPos);
+
+        (nodes.Arm0 as THREE.Bone).getWorldQuaternion(armWorldQuatern);
+        (nodes.Arm1 as THREE.Bone).getWorldQuaternion(forearmWorldQuatern);
+
         //props.currenAngleRef.current = "x: " + tempQuatArm.x.toPrecision(2) + "\ty: " + tempQuatArm.y.toPrecision(2) + "\tz: " + tempQuatArm.z.toPrecision(2) + "\tw: " + tempQuatArm.w.toPrecision(2);
         //props.currenAngleRef.current = "x: " + tempQuatForearm.x.toPrecision(2) + "\ty: " + tempQuatForearm.y.toPrecision(2) + "\tz: " + tempQuatForearm.z.toPrecision(2) + "\tw: " + tempQuatForearm.w.toPrecision(2);
-        angle = calculateAngleBetween(tempArmDir, tempForearmDir).toString()
+        angle = calculateAngleBetween(armAxisVec, forearmAxisVec).toString()
         //props.currenAngleRef.current = "x: " + tempArmDir.x.toPrecision(2) + "\ty: " + tempArmDir.y.toPrecision(2) + "\tz: " + tempArmDir.z.toPrecision(2);
         props.currenAngleRef.current = angle;
         props.armQuatRef.current = armQuatern;
@@ -174,9 +217,11 @@ const Model = ({ ...props }) => {
     return (
         <group ref={group} {...props} dispose={null}>
             <primitive object={object} position={[0,0,0]}/>
-            
-            <skinnedMesh geometry={nodes["Body_low"].geometry} skeleton={skeleton}>
-                {/* <skeletonHelper args={object} /> */}
+             <Axis object={armAxisGroup} axis={armAxis} scale={[20,20,20]}/>
+            <Axis object={forearmAxisGroup} axis={forearmAxis} scale={[20,20,20]}/> 
+            {/* <SingleAxis object={correctedAxisArm} scale={[20,20,20]}/>
+            <SingleAxis object={correctedAxisForearm} scale={[20,20,20]}/> */}
+            <skinnedMesh geometry={nodes["Body_low"].geometry} skeleton={skeleton} >
                 <meshPhongMaterial ref={material} attach="material" color="#b3720a" skinning />
             </skinnedMesh>
         </group>

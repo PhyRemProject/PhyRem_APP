@@ -13,6 +13,7 @@ import GradientButton from "../../Global/GradientButton";
 import SensorCalibration from "./SensorCalibration";
 import AngleProgress from "./AngleProgress";
 import ExerciseEnd from "./ExerciseEnd";
+import Axis from "./3DAxis";
 
 YellowBox.ignoreWarnings(['THREE.WebGLRenderer']);
 
@@ -159,7 +160,7 @@ function ExerciseView(props: ExerciseProps) {
 
     return (
         <>
-            <SensorCalibration updateRefPosition={updateRefPosition} ready={wsReady} />
+            {/* <SensorCalibration updateRefPosition={updateRefPosition} ready={wsReady} /> */}
             <View style={{
                 flex: 1,
                 flexWrap: 'wrap',
