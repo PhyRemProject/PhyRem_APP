@@ -160,7 +160,7 @@ function ExerciseView(props: ExerciseProps) {
 
     return (
         <>
-            {/* <SensorCalibration updateRefPosition={updateRefPosition} ready={wsReady} /> */}
+            <SensorCalibration updateRefPosition={updateRefPosition} ready={wsReady} />
             <View style={{
                 flex: 1,
                 flexWrap: 'wrap',

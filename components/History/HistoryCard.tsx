@@ -46,15 +46,25 @@ const HistoryCard = (props: any) => {
                                     alignSelf: "center",
                                     marginTop: "20%"
                                 }} size={40} /> :
-                            < FontAwesomeIcon
-                                icon={faTimes}
-                                style={{
-                                    color: "#FFF",
-                                    width: "100%",
-                                    alignContent: "center",
-                                    alignSelf: "center",
-                                    marginTop: "20%"
-                                }} size={40} />
+                            props.values.type === "physioEval" ?
+                                < FontAwesomeIcon
+                                    icon={faEnvelopeOpenText}
+                                    style={{
+                                        color: "#FFF",
+                                        width: "100%",
+                                        alignContent: "center",
+                                        alignSelf: "center",
+                                        marginTop: "20%"
+                                    }} size={40} /> :
+                                < FontAwesomeIcon
+                                    icon={faTimes}
+                                    style={{
+                                        color: "#FFF",
+                                        width: "100%",
+                                        alignContent: "center",
+                                        alignSelf: "center",
+                                        marginTop: "20%"
+                                    }} size={40} />
                 }
             </View>
 
@@ -132,7 +142,42 @@ const HistoryCard = (props: any) => {
                                     fontSize: 13,
                                     paddingTop: 0
                                 }}>{props.values.creationDate}</Text>
-                            </> : <></>
+                            </> :
+                            props.values.type === "physioEval" ?
+                                <>
+                                    <Text style={{
+                                        fontFamily: "Rawline-Bold",
+                                        color: "#FFF",
+                                        fontSize: 19,
+                                    }}>Avaliação de Fisioterapeuta</Text>
+
+                                    {/* <Text style={{
+                                        fontFamily: "Rawline-Bold",
+                                        color: "#FFF",
+                                        fontSize: 13,
+                                        paddingTop: 15
+                                    }}>Diagnóstico</Text>
+                                    <Text style={{
+                                        fontFamily: "Rawline",
+                                        color: "#FFF",
+                                        fontSize: 13,
+                                        paddingTop: 0
+                                    }}>{props.values.clinicDiagnosis}</Text> */}
+
+                                    <Text style={{
+                                        fontFamily: "Rawline-Bold",
+                                        color: "#FFF",
+                                        fontSize: 13,
+                                        paddingTop: 5
+                                    }}>Data</Text>
+                                    <Text style={{
+                                        fontFamily: "Rawline",
+                                        color: "#FFF",
+                                        fontSize: 13,
+                                        paddingTop: 0
+                                    }}>{props.values.creationDate}</Text>
+                                </> :
+                                <></>
 
                 }
 

@@ -149,14 +149,14 @@ const Dashboard = ({ navigation }: Props) => {
                             width: "100%",
                             color: "#FFF",
                             textAlignVertical: "center"
-                        }}>23 Janeiro</Text>
+                        }}>2 Fevereiro</Text>
                         <Text style={{
                             fontFamily: "Rawline-Bold",
                             fontSize: 15,
                             width: "100%",
                             color: "#FFF",
                             textAlignVertical: "center"
-                        }}>Dr. Super Doc</Text>
+                        }}>Dr. Miguel Machado</Text>
                     </View>
                 </View>
                 <View style={{

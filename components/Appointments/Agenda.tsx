@@ -14,13 +14,13 @@ const MyAgenda = () => {
             // the value of date key has to be an empty array []. If there exists no value for date key it is
             // considered that the date in question is not yet loaded
             items={{
-                '2020-11-10': [{ physician: 'Dr. Joao Sousa', hour: "12h00" }],
-                '2020-11-11': [{ physician: 'Dr. Raquel Tavares', hour: "13h00" }],
-                '2020-11-14': [{ physician: 'Dr. Raquel Tavares', hour: "14h00" }, { physician: 'Dr. Joao Sousa', hour: "16h00" }]
+                '2021-02-10': [{ physician: 'Dr. Joao Sousa', hour: "12h00" }],
+                '2021-02-02': [{ physician: 'Dr. Miguel Machado', hour: "15h00" }],
+                // '2020-11-14': [{ physician: 'Dr. Raquel Tavares', hour: "14h00" }, { physician: 'Dr. Joao Sousa', hour: "16h00" }]
             }}
 
             // Initially selected day
-            selected={'2020-11-10'}
+            selected={'2021-02-02'}
             // Minimum date that can be selected, dates before minDate will be grayed out. Default = undefined
             minDate={'2020-01-01'}
             // Maximum date that can be selected, dates after maxDate will be grayed out. Default = undefined
